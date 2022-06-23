@@ -1,0 +1,1 @@
+# HDrezka.ag-skip-ads
