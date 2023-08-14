@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ipwhttp, scControls, Vcl.StdCtrls,
-  Vcl.ComCtrls, RegExpr, System.StrUtils, System.NetEncoding, System.JSON;
+  Vcl.ComCtrls, RegExpr, System.StrUtils, System.IniFiles, System.NetEncoding,
+  System.JSON, ShellApi;
 
 type
   TRezkaForm = class(TForm)
@@ -22,13 +23,19 @@ type
     ButtonGetDirectPlayer: TButton;
     scListView2: TscListView;
     scLabel4: TscLabel;
-    Memo1: TMemo;
     scLabel5: TscLabel;
+    scListView3: TscListView;
+    scButton1: TscButton;
     procedure ButtonParseClick(Sender: TObject);
     procedure ButtonGetDirectPlayerClick(Sender: TObject);
     procedure scListView2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+
+    procedure scButton1Click(Sender: TObject);
   private
     { Private declarations }
+    IniF, IniF2: TInifile;
     function pars(s1, s2, st: string): string;
     function DateTimeToUnix(ConvDate: TDateTime): Longint;
     function SubStr(const S: string; StartPoint, EndPoint: Integer): string;
@@ -52,6 +59,9 @@ var
   JSonValue: TJSonValue;
   urlparse, xlink: string;
 begin
+  IniF.WriteString('ED', 'Ed1', EditLink.Text);
+  IniF.WriteString('ED', 'Ed2', EditSeason.Text);
+  IniF.WriteString('ED', 'Ed3', EditEpisode.Text);
   HTTPS := Tipwhttp.Create(nil);
   HTTPS.AllowHTTPCompression := true;
   HTTPS.Config
@@ -77,18 +87,15 @@ begin
         '&action=get_stream';
       HTTPS.POST('https://hdrezka.ag/ajax/get_cdn_series/?t=' +
         inttostr(DateTimeToUnix(now)));
-      // ShowMessage(HTTPS.TransferredData);
 
-      // RezkaForm.Memo2.Text := pars('{"success":',',',HTTPS.TransferredData);
-
-        JSonValue := TJSonObject.ParseJSONValue(HTTPS.TransferredData);
-        try
-          urlparse := JSonValue.GetValue<string>('url');
-        except
-        urlparse := StringReplace(streams, '\/\/_\/\/', '//_//', [rfReplaceAll]);
-        end;
-        JSonValue.Free;
-
+      JSonValue := TJSonObject.ParseJSONValue(HTTPS.TransferredData);
+      try
+        urlparse := JSonValue.GetValue<string>('url');
+      except
+        urlparse := StringReplace(streams, '\/\/_\/\/', '//_//',
+          [rfReplaceAll]);
+      end;
+      JSonValue.Free;
 
       xlink := SubStr(urlparse, 3, Length(urlparse));
       xlink := StringReplace(xlink, '//_//', '', [rfReplaceAll]);
@@ -98,7 +105,7 @@ begin
       xlink := StringReplace(xlink, 'QEBAQEAhIyMhXl5e', '', [rfReplaceAll]);
       xlink := StringReplace(xlink, 'JCQhIUAkJEBeIUAjJCRA', '', [rfReplaceAll]);
       xlink := TnetEncoding.Base64String.Decode(xlink);
-      // RezkaForm.Memo1.Text := StringReplace(xlink, ',', #13#10, [rfReplaceAll]);
+
       Reg := TRegExpr.Create;
       Reg.Expression := '\[(.*?)\](.*?) [\w]+ (.*?)(,|$)';
       if Reg.Exec(xlink) then
@@ -121,6 +128,9 @@ begin
 end;
 
 procedure TRezkaForm.ButtonParseClick(Sender: TObject);
+var
+  NameLog: string;
+  i: Integer;
 begin
   HTTPS := Tipwhttp.Create(nil);
   HTTPS.AllowHTTPCompression := true;
@@ -128,7 +138,7 @@ begin
     ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
   HTTPS.Config('CodePage=65001');
   HTTPS.Config('KeepAlive=True');
-  // HTTPS.ResetHeaders;
+  //
 
   try
     scListView1.Clear;
@@ -136,8 +146,10 @@ begin
   end;
   if RezkaForm.EditLink.Text <> '' then
   begin
+    HTTPS.ResetHeaders;
     Reg := TRegExpr.Create;
     urllinkedit := '';
+
     Reg.Expression := '((https:|http:)\/\/.*?.html)';
     if Reg.Exec(RezkaForm.EditLink.Text) then
     begin
@@ -147,20 +159,24 @@ begin
     end
     else
       ShowMessage('Bad link!');
-    // Reg.Free;
+
+    NameLog := FormatDateTime('dd.mm.yyyy"-"hh.nn.ss', now);
+    IniF.WriteString('ED', NameLog, urllinkedit);
     HTTPS.Accept :=
       'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
     HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1' +
       #13#10 + 'Accept-Language: en-US,en;q=0.9';
     HTTPS.Get(urllinkedit);
-    // https://rezka.ag/series/drama/1929-ostrye-kozyrki-2013.html#t:355-s:6-e:1
+
     Reg.Expression := 'data-translator_id="([\d]+)">(.*?)<';
     if Reg.Exec(HTTPS.TransferredData) then
       repeat
         LI := RezkaForm.scListView1.Items.Add;
         LI.Caption := Reg.Match[1];
         LI.SubItems.Add(Reg.Match[2]);
+
       until not Reg.ExecNext;
+
     if RezkaForm.scListView1.Items.count = 0 then
     begin
       Reg.Expression :=
@@ -170,6 +186,7 @@ begin
           LI := RezkaForm.scListView1.Items.Add;
           LI.Caption := Reg.Match[2];
           LI.SubItems.Add('Single translation! Одна озвучка!');
+
         until not Reg.ExecNext;
     end;
     streams := pars('{"id":"cdnplayer","streams":"', '"',
@@ -185,38 +202,28 @@ begin
     ShowMessage('No link insert!');
 end;
 
-{ procedure TRezkaForm.ButtonTestClick(Sender: TObject);
-  var
-  urlparse, xlink: string;
-
-  begin
-  xlink := SubStr(urlparse, 3, Length(urlparse));
-  xlink := StringReplace(xlink, '//_//', '', [rfReplaceAll]);
-  xlink := StringReplace(xlink, 'JCQjISFAIyFAIyM=', '', [rfReplaceAll]);
-  xlink := StringReplace(xlink, 'Xl5eIUAjIyEhIyM=', '', [rfReplaceAll]);
-  xlink := StringReplace(xlink, 'IyMjI14hISMjIUBA', '', [rfReplaceAll]);
-  xlink := StringReplace(xlink, 'QEBAQEAhIyMhXl5e', '', [rfReplaceAll]);
-  xlink := StringReplace(xlink, 'JCQhIUAkJEBeIUAjJCRA', '', [rfReplaceAll]);
-  xlink := TnetEncoding.Base64String.Decode(xlink);
-  // RezkaForm.Memo1.Text := StringReplace(xlink, ',', #13#10, [rfReplaceAll]);
-  Reg := TRegExpr.Create;
-  Reg.Expression := '\[(.*?)\](.*?) [\w]+ (.*?)(,|$)';
-  if Reg.Exec(xlink) then
-  repeat
-  LI := RezkaForm.scListView2.Items.Add;
-  LI.Caption := Reg.Match[1];
-  LI.SubItems.Add(Reg.Match[2]);
-  LI.SubItems.Add(Reg.Match[3]);
-  until not Reg.ExecNext;
-  Reg.Free;
-  end; }
-
 function TRezkaForm.DateTimeToUnix(ConvDate: TDateTime): Longint;
 const
-  // Sets UnixStartDate to TDateTime of 01/01/1970
   UnixStartDate: TDateTime = 25569.0;
 begin
   result := Round((ConvDate - UnixStartDate) * 86400);
+end;
+
+procedure TRezkaForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  IniF.WriteString('ED', 'Ed1', EditLink.Text);
+  IniF.WriteString('ED', 'Ed2', EditSeason.Text);
+  IniF.WriteString('ED', 'Ed3', EditEpisode.Text);
+end;
+
+procedure TRezkaForm.FormCreate(Sender: TObject);
+begin
+  IniF := TInifile.Create(ExtractFilePath(Application.ExeName) + 'SeEp.ini');
+
+  // IniF.ReadSections(scListBox1.Items);
+  EditLink.Text := IniF.ReadString('ED', 'Ed1', '');
+  EditSeason.Text := IniF.ReadString('ED', 'Ed2', '');
+  EditEpisode.Text := IniF.ReadString('ED', 'Ed3', '');
 end;
 
 function TRezkaForm.pars(s1, s2, st: string): string;
@@ -232,18 +239,32 @@ begin
   end;
 end;
 
+procedure TRezkaForm.scButton1Click(Sender: TObject);
+var
+string1: string;
+begin
+ if RezkaForm.scListView2.Items.count > 0 then
+  begin
+  string1 := scListView3.Selected.Caption;
+   // RezkaForm.scListView3.Items.Add.Caption := scListView2.Selected.SubItems.Text;
+    ShellExecute( Handle, 'open', PChar(string1), nil, nil, SW_NORMAL );
+  end;
+
+end;
+
 procedure TRezkaForm.scListView2Click(Sender: TObject);
 var
   separate: string;
+
 begin
-  RezkaForm.Memo1.Lines.Clear;
+   RezkaForm.scListView3.Items.Clear;
   if RezkaForm.scListView2.Items.count > 0 then
   begin
-    // separate := StringReplace(scListView2.Selected.SubItems.Text, #13, #13+'#####'+#13, [rfReplaceAll]);
-    // scListView2.Selected.SubItems.Text
-    RezkaForm.Memo1.Text := scListView2.Selected.SubItems.Text;
+    RezkaForm.scListView3.Items.Add.Caption := scListView2.Selected.SubItems.Text;
   end;
 end;
+
+
 
 function TRezkaForm.SubStr(const S: string;
   StartPoint, EndPoint: Integer): string;
