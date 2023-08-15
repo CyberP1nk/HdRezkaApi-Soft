@@ -1,9 +1,10 @@
 object RezkaForm: TRezkaForm
   Left = 0
   Top = 0
-  Caption = 'HRezka.ag skip ads | v 1.3 | Credit: M1st'
-  ClientHeight = 476
-  ClientWidth = 315
+  BorderStyle = bsDialog
+  Caption = 'credit: m1st'
+  ClientHeight = 225
+  ClientWidth = 223
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -313,214 +314,17 @@ object RezkaForm: TRezkaForm
     14000001000080000005FC81000024004090005F000082792902FC010000E800
     003FFFF70000FF81FFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFF
     FFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000FFFFFFFFFFFF0000}
+  Position = poDesktopCenter
   OnClose = FormClose
   OnCreate = FormCreate
   TextHeight = 15
-  object ButtonParse: TButton
-    Left = 8
-    Top = 63
-    Width = 289
-    Height = 25
-    Caption = 'Get info about translation! ('#1048#1085#1092#1086#1088#1084#1072#1094#1080#1103' '#1086#1073' '#1086#1079#1074#1091#1095#1077')'
-    TabOrder = 0
-    OnClick = ButtonParseClick
-  end
-  object scListView1: TscListView
-    Left = 8
-    Top = 115
-    Width = 289
-    Height = 118
-    FluentUIOpaque = False
-    Columns = <
-      item
-        Caption = 'id'
-        Width = 90
-      end
-      item
-        Caption = 'Translation'
-        Width = 300
-      end>
-    ExtendedColumnDraw = False
-    RowSelect = True
-    TabOrder = 1
-    ViewStyle = vsReport
-    SelectionStyle = scstStyled
-    ShowFocusRect = True
-    AlternateRow = False
-    GridLines = False
-    DefaultDraw = False
-    SelectionColor = clNone
-    SelectionTextColor = clHighlightText
-  end
-  object EditLink: TEdit
-    Left = 8
-    Top = 34
-    Width = 289
-    Height = 23
-    TabOrder = 2
-  end
-  object scLabelLink: TscLabel
-    Left = 8
-    Top = 13
-    Width = 75
-    Height = 15
-    FluentUIOpaque = False
-    TabOrder = 3
-    DragForm = False
-    DragTopForm = True
-    GlowEffect.Enabled = False
-    GlowEffect.Color = clBtnShadow
-    GlowEffect.AlphaValue = 255
-    GlowEffect.GlowSize = 7
-    GlowEffect.Offset = 0
-    GlowEffect.Intensive = True
-    GlowEffect.StyleColors = True
-    AutoSize = True
-    UseFontColorToStyleColor = False
-    Caption = 'Link ('#1057#1089#1099#1083#1082#1072')'
-  end
-  object scLabel1: TscLabel
-    Left = 8
-    Top = 94
-    Width = 113
-    Height = 15
-    FluentUIOpaque = False
-    TabOrder = 4
-    DragForm = False
-    DragTopForm = True
-    GlowEffect.Enabled = False
-    GlowEffect.Color = clBtnShadow
-    GlowEffect.AlphaValue = 255
-    GlowEffect.GlowSize = 7
-    GlowEffect.Offset = 0
-    GlowEffect.Intensive = True
-    GlowEffect.StyleColors = True
-    AutoSize = True
-    UseFontColorToStyleColor = False
-    Caption = 'Translation ('#1054#1079#1074#1091#1095#1082#1072')'
-  end
-  object EditSeason: TEdit
-    Left = 8
-    Top = 256
-    Width = 75
-    Height = 23
-    TabOrder = 5
-  end
-  object EditEpisode: TEdit
-    Left = 218
-    Top = 256
-    Width = 79
-    Height = 23
-    TabOrder = 6
-  end
-  object scLabel2: TscLabel
-    Left = 8
-    Top = 239
-    Width = 81
-    Height = 15
-    FluentUIOpaque = False
-    TabOrder = 7
-    DragForm = False
-    DragTopForm = True
-    GlowEffect.Enabled = False
-    GlowEffect.Color = clBtnShadow
-    GlowEffect.AlphaValue = 255
-    GlowEffect.GlowSize = 7
-    GlowEffect.Offset = 0
-    GlowEffect.Intensive = True
-    GlowEffect.StyleColors = True
-    AutoSize = True
-    UseFontColorToStyleColor = False
-    Caption = 'Season ('#1057#1077#1079#1086#1085')'
-  end
-  object scLabel3: TscLabel
-    Left = 206
-    Top = 239
-    Width = 91
-    Height = 15
-    FluentUIOpaque = False
-    TabOrder = 8
-    DragForm = False
-    DragTopForm = True
-    GlowEffect.Enabled = False
-    GlowEffect.Color = clBtnShadow
-    GlowEffect.AlphaValue = 255
-    GlowEffect.GlowSize = 7
-    GlowEffect.Offset = 0
-    GlowEffect.Intensive = True
-    GlowEffect.StyleColors = True
-    AutoSize = True
-    UseFontColorToStyleColor = False
-    Caption = 'Episode ('#1069#1087#1080#1079#1086#1076')'
-  end
-  object ButtonGetDirectPlayer: TButton
-    Left = 8
-    Top = 285
-    Width = 289
-    Height = 25
-    Caption = 'Get direct player links ('#1055#1088#1103#1084#1099#1077' '#1089#1089#1099#1083#1082#1080' '#1087#1083#1077#1077#1088#1072')'
-    TabOrder = 9
-    OnClick = ButtonGetDirectPlayerClick
-  end
-  object scListView2: TscListView
-    Left = 8
-    Top = 316
-    Width = 97
-    Height = 150
-    FluentUIOpaque = False
-    Columns = <
-      item
-        Caption = 'Resolution'
-        Width = 90
-      end
-      item
-        Caption = 'Link'
-        Width = 150
-      end
-      item
-        Caption = 'Alt Link'
-        Width = 150
-      end>
-    ExtendedColumnDraw = False
-    RowSelect = True
-    TabOrder = 10
-    ViewStyle = vsReport
-    SelectionStyle = scstStyled
-    ShowFocusRect = True
-    AlternateRow = False
-    GridLines = False
-    DefaultDraw = False
-    SelectionColor = clNone
-    SelectionTextColor = clHighlightText
-    OnClick = scListView2Click
-  end
-  object scLabel4: TscLabel
-    Left = 111
-    Top = 451
-    Width = 198
-    Height = 15
-    FluentUIOpaque = False
-    TabOrder = 11
-    DragForm = False
-    DragTopForm = True
-    GlowEffect.Enabled = False
-    GlowEffect.Color = clBtnShadow
-    GlowEffect.AlphaValue = 255
-    GlowEffect.GlowSize = 7
-    GlowEffect.Offset = 0
-    GlowEffect.Intensive = True
-    GlowEffect.StyleColors = True
-    AutoSize = True
-    UseFontColorToStyleColor = False
-    Caption = 'Click on links for result here and copy'
-  end
   object scLabel5: TscLabel
-    Left = 229
-    Top = 13
+    Left = 153
+    Top = 34
     Width = 68
     Height = 15
     FluentUIOpaque = False
-    TabOrder = 12
+    TabOrder = 0
     DragForm = False
     DragTopForm = True
     GlowEffect.Enabled = False
@@ -534,112 +338,764 @@ object RezkaForm: TRezkaForm
     UseFontColorToStyleColor = False
     Caption = 'Cracking.org'
   end
-  object scListView3: TscListView
-    Left = 111
-    Top = 316
-    Width = 186
-    Height = 77
-    FluentUIOpaque = False
-    Columns = <
-      item
-        Width = 100
-      end>
-    ExtendedColumnDraw = False
-    TabOrder = 13
-    SelectionStyle = scstStyled
+  object scPageControl1: TscPageControl
+    Left = 0
+    Top = 0
+    Width = 223
+    Height = 225
+    ActivePage = scTabSheet1
+    Align = alClient
+    TabOrder = 1
+    TabGlowEffect.Enabled = False
+    TabGlowEffect.Color = clHighlight
+    TabGlowEffect.AlphaValue = 255
+    TabGlowEffect.GlowSize = 7
+    TabGlowEffect.Offset = 0
+    TabGlowEffect.Intensive = True
+    TabGlowEffect.StyleColors = True
+    TabGlowEffect.HotColor = clNone
+    TabGlowEffect.PressedColor = clNone
+    TabGlowEffect.FocusedColor = clNone
+    TabGlowEffect.PressedGlowSize = 7
+    TabGlowEffect.PressedAlphaValue = 255
+    TabGlowEffect.States = [scsHot, scsPressed, scsFocused]
+    TabImageGlow = True
+    HideBorder = False
+    HideTabs = False
+    TabsOffset = 0
+    TabsInCenter = False
+    ShowButtonsDivider = True
+    TabsWallpaperIndex = -1
+    ShowInActiveTab = True
     ShowFocusRect = True
-    AlternateRow = False
-    GridLines = False
-    DefaultDraw = False
-    SelectionColor = clNone
-    SelectionTextColor = clHighlightText
-  end
-  object scButton1: TscButton
-    Left = 111
-    Top = 399
-    Width = 186
-    Height = 46
-    FluentUIOpaque = False
-    TabOrder = 14
-    TabStop = True
-    OnClick = scButton1Click
-    Animation = False
-    Caption = 'Watch ('#1057#1084#1086#1090#1088#1077#1090#1100')'
-    CaptionCenterAlignment = False
-    CanFocused = True
-    CustomDropDown = False
-    Margin = -1
-    Spacing = 1
-    Layout = blGlyphLeft
-    ImageIndex = -1
-    ImageMargin = 0
-    TransparentBackground = True
-    ColorOptions.NormalColor = clBtnFace
-    ColorOptions.HotColor = clBtnFace
-    ColorOptions.PressedColor = clBtnShadow
-    ColorOptions.FocusedColor = clBtnFace
-    ColorOptions.DisabledColor = clBtnFace
-    ColorOptions.FrameNormalColor = clBtnShadow
-    ColorOptions.FrameHotColor = clHighlight
-    ColorOptions.FramePressedColor = clHighlight
-    ColorOptions.FrameFocusedColor = clHighlight
-    ColorOptions.FrameDisabledColor = clBtnShadow
-    ColorOptions.FrameWidth = 1
-    ColorOptions.FontNormalColor = clBtnText
-    ColorOptions.FontHotColor = clBtnText
-    ColorOptions.FontPressedColor = clBtnText
-    ColorOptions.FontFocusedColor = clBtnText
-    ColorOptions.FontDisabledColor = clBtnShadow
-    ColorOptions.TitleFontNormalColor = clBtnText
-    ColorOptions.TitleFontHotColor = clBtnText
-    ColorOptions.TitleFontPressedColor = clBtnText
-    ColorOptions.TitleFontFocusedColor = clBtnText
-    ColorOptions.TitleFontDisabledColor = clBtnShadow
-    ColorOptions.StyleColors = True
-    TitleFont.Charset = DEFAULT_CHARSET
-    TitleFont.Color = clWindowText
-    TitleFont.Height = -12
-    TitleFont.Name = 'Segoe UI'
-    TitleFont.Style = [fsBold]
-    ToggleMode = False
-    HotImageIndex = -1
-    FocusedImageIndex = -1
-    PressedImageIndex = -1
-    StyleKind = scbsPushButton
-    UseGalleryMenuImage = False
-    UseGalleryMenuCaption = False
-    CustomImageNormalIndex = -1
-    CustomImageHotIndex = -1
-    CustomImagePressedIndex = -1
-    CustomImageDisabledIndex = -1
-    CustomImageFocusedIndex = -1
-    ScaleMarginAndSpacing = False
-    WidthWithCaption = 0
-    WidthWithoutCaption = 0
-    UseFontColorToStyleColor = False
-    RepeatClick = False
-    RepeatClickInterval = 100
-    GlowEffect.Enabled = False
-    GlowEffect.Color = clHighlight
-    GlowEffect.AlphaValue = 255
-    GlowEffect.GlowSize = 7
-    GlowEffect.Offset = 0
-    GlowEffect.Intensive = True
-    GlowEffect.StyleColors = True
-    GlowEffect.HotColor = clNone
-    GlowEffect.PressedColor = clNone
-    GlowEffect.FocusedColor = clNone
-    GlowEffect.PressedGlowSize = 7
-    GlowEffect.PressedAlphaValue = 255
-    GlowEffect.States = [scsHot, scsPressed, scsFocused]
-    ImageGlow = True
-    ShowGalleryMenuFromTop = False
-    ShowGalleryMenuFromRight = False
-    ShowMenuArrow = True
-    SplitButton = False
-    ShowFocusRect = True
-    Down = False
-    GroupIndex = 0
-    AllowAllUp = False
+    MouseWheelSupport = False
+    TabExtededDraw = False
+    TabSpacing = 1
+    FreeOnClose = False
+    ShowCloseButtons = False
+    object scTabSheet1: TscTabSheet
+      Caption = '1 step'
+      StyleKind = sctsTabSheet
+      WallpaperIndex = -1
+      CustomBackgroundImageIndex = -1
+      DrawTabsWallpaper = False
+      object Panel1: TPanel
+        Left = 0
+        Top = 0
+        Width = 215
+        Height = 195
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitWidth = 217
+        object EditLink: TEdit
+          Left = 8
+          Top = 34
+          Width = 193
+          Height = 23
+          TabOrder = 0
+          TextHint = 
+            'https://rezka.ag/animation/fiction/58988-zombi-apokalipsis-i-spi' +
+            'sok-iz-100-del-chto-ya-vypolnyu-pered-smertyu-2023.html'
+        end
+        object scLabelLink: TscLabel
+          Left = 8
+          Top = 13
+          Width = 22
+          Height = 15
+          FluentUIOpaque = False
+          TabOrder = 1
+          DragForm = False
+          DragTopForm = True
+          GlowEffect.Enabled = False
+          GlowEffect.Color = clBtnShadow
+          GlowEffect.AlphaValue = 255
+          GlowEffect.GlowSize = 7
+          GlowEffect.Offset = 0
+          GlowEffect.Intensive = True
+          GlowEffect.StyleColors = True
+          AutoSize = True
+          UseFontColorToStyleColor = False
+          Caption = 'Link'
+        end
+        object ButtonParse: TButton
+          Left = 8
+          Top = 152
+          Width = 127
+          Height = 25
+          Caption = 'Get translation'
+          TabOrder = 2
+          OnClick = ButtonParseClick
+        end
+        object scListView1: TscListView
+          Left = 8
+          Top = 63
+          Width = 193
+          Height = 83
+          FluentUIOpaque = False
+          Columns = <
+            item
+              Caption = 'id'
+              Width = 30
+            end
+            item
+              Caption = 'Translation'
+              Width = 157
+            end>
+          ExtendedColumnDraw = False
+          RowSelect = True
+          TabOrder = 3
+          ViewStyle = vsReport
+          SelectionStyle = scstStyled
+          ShowFocusRect = True
+          AlternateRow = False
+          GridLines = False
+          DefaultDraw = False
+          SelectionColor = clNone
+          SelectionTextColor = clHighlightText
+          OnClick = scListView1Click
+        end
+        object scLabel1: TscLabel
+          Left = 141
+          Top = 161
+          Width = 57
+          Height = 15
+          FluentUIOpaque = False
+          TabOrder = 4
+          DragForm = False
+          DragTopForm = True
+          GlowEffect.Enabled = False
+          GlowEffect.Color = clBtnShadow
+          GlowEffect.AlphaValue = 255
+          GlowEffect.GlowSize = 7
+          GlowEffect.Offset = 0
+          GlowEffect.Intensive = True
+          GlowEffect.StyleColors = True
+          AutoSize = True
+          UseFontColorToStyleColor = False
+          Caption = 'Translation'
+        end
+      end
+    end
+    object scTabSheet2: TscTabSheet
+      Caption = '2 step'
+      StyleKind = sctsTabSheet
+      WallpaperIndex = -1
+      CustomBackgroundImageIndex = -1
+      DrawTabsWallpaper = False
+      object Panel2: TPanel
+        Left = 0
+        Top = 0
+        Width = 215
+        Height = 195
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitWidth = 217
+        object ButtonGetDirectPlayer: TButton
+          Left = 113
+          Top = 151
+          Width = 90
+          Height = 28
+          Caption = 'Get resolution'
+          TabOrder = 0
+          OnClick = ButtonGetDirectPlayerClick
+        end
+        object scListView2: TscListView
+          Left = 9
+          Top = 63
+          Width = 95
+          Height = 114
+          FluentUIOpaque = False
+          Columns = <
+            item
+              Caption = 'Resolution'
+              Width = 90
+            end
+            item
+              Caption = 'Link'
+              Width = 0
+            end
+            item
+              Caption = 'Alt Link'
+              Width = 0
+            end>
+          ColumnClick = False
+          ExtendedColumnDraw = False
+          RowSelect = True
+          TabOrder = 1
+          ViewStyle = vsReport
+          SelectionStyle = scstStyled
+          ShowFocusRect = True
+          AlternateRow = False
+          GridLines = False
+          DefaultDraw = False
+          SelectionColor = clNone
+          SelectionTextColor = clHighlightText
+          OnClick = scListView2Click
+        end
+        object Panel4: TPanel
+          Left = 113
+          Top = 31
+          Width = 90
+          Height = 114
+          BevelInner = bvRaised
+          BevelOuter = bvLowered
+          TabOrder = 2
+          object scListView4: TscListView
+            Left = 2
+            Top = 2
+            Width = 86
+            Height = 110
+            FluentUIOpaque = False
+            Align = alClient
+            Columns = <
+              item
+                Caption = 'S'
+                Width = 40
+              end
+              item
+                Caption = 'E'
+                Width = 40
+              end>
+            ExtendedColumnDraw = False
+            HideSelection = False
+            RowSelect = True
+            TabOrder = 0
+            ViewStyle = vsReport
+            SelectionStyle = scstStyled
+            ShowFocusRect = True
+            AlternateRow = False
+            GridLines = False
+            DefaultDraw = False
+            SelectionColor = clNone
+            SelectionTextColor = clHighlightText
+            ExplicitWidth = 84
+          end
+        end
+        object Memo1: TMemo
+          Left = 9
+          Top = 35
+          Width = 95
+          Height = 22
+          Enabled = False
+          TabOrder = 3
+        end
+        object scLabel7: TscLabel
+          Left = 11
+          Top = 10
+          Width = 109
+          Height = 15
+          FluentUIOpaque = False
+          TabOrder = 4
+          DragForm = False
+          DragTopForm = True
+          GlowEffect.Enabled = False
+          GlowEffect.Color = clBtnShadow
+          GlowEffect.AlphaValue = 255
+          GlowEffect.GlowSize = 7
+          GlowEffect.Offset = 0
+          GlowEffect.Intensive = True
+          GlowEffect.StyleColors = True
+          AutoSize = True
+          UseFontColorToStyleColor = False
+          Caption = 'Max Season/Episode'
+        end
+      end
+    end
+    object scTabSheet3: TscTabSheet
+      Caption = '3 step'
+      StyleKind = sctsTabSheet
+      WallpaperIndex = -1
+      CustomBackgroundImageIndex = -1
+      DrawTabsWallpaper = False
+      object Panel3: TPanel
+        Left = 0
+        Top = 0
+        Width = 215
+        Height = 195
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitWidth = 217
+        object scButton1: TscButton
+          Left = 10
+          Top = 134
+          Width = 79
+          Height = 46
+          FluentUIOpaque = False
+          TabOrder = 0
+          TabStop = True
+          OnClick = scButton1Click
+          Animation = False
+          Caption = 'Watch'
+          CaptionCenterAlignment = False
+          CanFocused = True
+          CustomDropDown = False
+          Margin = -1
+          Spacing = 1
+          Layout = blGlyphLeft
+          ImageIndex = -1
+          ImageMargin = 0
+          TransparentBackground = True
+          ColorOptions.NormalColor = clBtnFace
+          ColorOptions.HotColor = clBtnFace
+          ColorOptions.PressedColor = clBtnShadow
+          ColorOptions.FocusedColor = clBtnFace
+          ColorOptions.DisabledColor = clBtnFace
+          ColorOptions.FrameNormalColor = clBtnShadow
+          ColorOptions.FrameHotColor = clHighlight
+          ColorOptions.FramePressedColor = clHighlight
+          ColorOptions.FrameFocusedColor = clHighlight
+          ColorOptions.FrameDisabledColor = clBtnShadow
+          ColorOptions.FrameWidth = 1
+          ColorOptions.FontNormalColor = clBtnText
+          ColorOptions.FontHotColor = clBtnText
+          ColorOptions.FontPressedColor = clBtnText
+          ColorOptions.FontFocusedColor = clBtnText
+          ColorOptions.FontDisabledColor = clBtnShadow
+          ColorOptions.TitleFontNormalColor = clBtnText
+          ColorOptions.TitleFontHotColor = clBtnText
+          ColorOptions.TitleFontPressedColor = clBtnText
+          ColorOptions.TitleFontFocusedColor = clBtnText
+          ColorOptions.TitleFontDisabledColor = clBtnShadow
+          ColorOptions.StyleColors = True
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -12
+          TitleFont.Name = 'Segoe UI'
+          TitleFont.Style = [fsBold]
+          ToggleMode = False
+          HotImageIndex = -1
+          FocusedImageIndex = -1
+          PressedImageIndex = -1
+          StyleKind = scbsPushButton
+          UseGalleryMenuImage = False
+          UseGalleryMenuCaption = False
+          CustomImageNormalIndex = -1
+          CustomImageHotIndex = -1
+          CustomImagePressedIndex = -1
+          CustomImageDisabledIndex = -1
+          CustomImageFocusedIndex = -1
+          ScaleMarginAndSpacing = False
+          WidthWithCaption = 0
+          WidthWithoutCaption = 0
+          UseFontColorToStyleColor = False
+          RepeatClick = False
+          RepeatClickInterval = 100
+          GlowEffect.Enabled = False
+          GlowEffect.Color = clHighlight
+          GlowEffect.AlphaValue = 255
+          GlowEffect.GlowSize = 7
+          GlowEffect.Offset = 0
+          GlowEffect.Intensive = True
+          GlowEffect.StyleColors = True
+          GlowEffect.HotColor = clNone
+          GlowEffect.PressedColor = clNone
+          GlowEffect.FocusedColor = clNone
+          GlowEffect.PressedGlowSize = 7
+          GlowEffect.PressedAlphaValue = 255
+          GlowEffect.States = [scsHot, scsPressed, scsFocused]
+          ImageGlow = True
+          ShowGalleryMenuFromTop = False
+          ShowGalleryMenuFromRight = False
+          ShowMenuArrow = True
+          SplitButton = False
+          ShowFocusRect = True
+          Down = False
+          GroupIndex = 0
+          AllowAllUp = False
+        end
+        object scButton2: TscButton
+          Left = 114
+          Top = 134
+          Width = 83
+          Height = 46
+          FluentUIOpaque = False
+          TabOrder = 1
+          TabStop = True
+          OnClick = scButton2Click
+          Animation = False
+          Caption = 'Copy'
+          CaptionCenterAlignment = False
+          CanFocused = True
+          CustomDropDown = False
+          Margin = -1
+          Spacing = 1
+          Layout = blGlyphLeft
+          ImageIndex = -1
+          ImageMargin = 0
+          TransparentBackground = True
+          ColorOptions.NormalColor = clBtnFace
+          ColorOptions.HotColor = clBtnFace
+          ColorOptions.PressedColor = clBtnShadow
+          ColorOptions.FocusedColor = clBtnFace
+          ColorOptions.DisabledColor = clBtnFace
+          ColorOptions.FrameNormalColor = clBtnShadow
+          ColorOptions.FrameHotColor = clHighlight
+          ColorOptions.FramePressedColor = clHighlight
+          ColorOptions.FrameFocusedColor = clHighlight
+          ColorOptions.FrameDisabledColor = clBtnShadow
+          ColorOptions.FrameWidth = 1
+          ColorOptions.FontNormalColor = clBtnText
+          ColorOptions.FontHotColor = clBtnText
+          ColorOptions.FontPressedColor = clBtnText
+          ColorOptions.FontFocusedColor = clBtnText
+          ColorOptions.FontDisabledColor = clBtnShadow
+          ColorOptions.TitleFontNormalColor = clBtnText
+          ColorOptions.TitleFontHotColor = clBtnText
+          ColorOptions.TitleFontPressedColor = clBtnText
+          ColorOptions.TitleFontFocusedColor = clBtnText
+          ColorOptions.TitleFontDisabledColor = clBtnShadow
+          ColorOptions.StyleColors = True
+          TitleFont.Charset = DEFAULT_CHARSET
+          TitleFont.Color = clWindowText
+          TitleFont.Height = -12
+          TitleFont.Name = 'Segoe UI'
+          TitleFont.Style = [fsBold]
+          ToggleMode = False
+          HotImageIndex = -1
+          FocusedImageIndex = -1
+          PressedImageIndex = -1
+          StyleKind = scbsPushButton
+          UseGalleryMenuImage = False
+          UseGalleryMenuCaption = False
+          CustomImageNormalIndex = -1
+          CustomImageHotIndex = -1
+          CustomImagePressedIndex = -1
+          CustomImageDisabledIndex = -1
+          CustomImageFocusedIndex = -1
+          ScaleMarginAndSpacing = False
+          WidthWithCaption = 0
+          WidthWithoutCaption = 0
+          UseFontColorToStyleColor = False
+          RepeatClick = False
+          RepeatClickInterval = 100
+          GlowEffect.Enabled = False
+          GlowEffect.Color = clHighlight
+          GlowEffect.AlphaValue = 255
+          GlowEffect.GlowSize = 7
+          GlowEffect.Offset = 0
+          GlowEffect.Intensive = True
+          GlowEffect.StyleColors = True
+          GlowEffect.HotColor = clNone
+          GlowEffect.PressedColor = clNone
+          GlowEffect.FocusedColor = clNone
+          GlowEffect.PressedGlowSize = 7
+          GlowEffect.PressedAlphaValue = 255
+          GlowEffect.States = [scsHot, scsPressed, scsFocused]
+          ImageGlow = True
+          ShowGalleryMenuFromTop = False
+          ShowGalleryMenuFromRight = False
+          ShowMenuArrow = True
+          SplitButton = False
+          ShowFocusRect = True
+          Down = False
+          GroupIndex = 0
+          AllowAllUp = False
+        end
+        object Panel5: TPanel
+          Left = 10
+          Top = 33
+          Width = 189
+          Height = 95
+          BevelInner = bvRaised
+          BevelOuter = bvLowered
+          TabOrder = 2
+          object scListView3: TscListView
+            Left = 2
+            Top = 2
+            Width = 185
+            Height = 91
+            FluentUIOpaque = False
+            Align = alClient
+            Columns = <
+              item
+                AutoSize = True
+              end>
+            ExtendedColumnDraw = False
+            TabOrder = 0
+            ViewStyle = vsReport
+            SelectionStyle = scstStyled
+            ShowFocusRect = True
+            AlternateRow = False
+            GridLines = False
+            DefaultDraw = False
+            SelectionColor = clNone
+            SelectionTextColor = clHighlightText
+          end
+        end
+        object scLabel6: TscLabel
+          Left = 14
+          Top = 12
+          Width = 27
+          Height = 15
+          FluentUIOpaque = False
+          TabOrder = 3
+          DragForm = False
+          DragTopForm = True
+          GlowEffect.Enabled = False
+          GlowEffect.Color = clBtnShadow
+          GlowEffect.AlphaValue = 255
+          GlowEffect.GlowSize = 7
+          GlowEffect.Offset = 0
+          GlowEffect.Intensive = True
+          GlowEffect.StyleColors = True
+          AutoSize = True
+          UseFontColorToStyleColor = False
+          Caption = 'Links'
+        end
+      end
+    end
+    object scTabSheet4: TscTabSheet
+      Caption = 'Top Wnow'
+      StyleKind = sctsTabSheet
+      WallpaperIndex = -1
+      CustomBackgroundImageIndex = -1
+      DrawTabsWallpaper = False
+      object Panel6: TPanel
+        Left = 0
+        Top = 0
+        Width = 215
+        Height = 195
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitHeight = 191
+        object scListView5: TscListView
+          Left = 2
+          Top = 2
+          Width = 209
+          Height = 159
+          FluentUIOpaque = False
+          Columns = <
+            item
+              Caption = 'Link'
+              Width = 53
+            end
+            item
+              Caption = 'Name'
+              Width = 150
+            end>
+          ExtendedColumnDraw = False
+          TabOrder = 0
+          ViewStyle = vsReport
+          SelectionStyle = scstStyled
+          ShowFocusRect = True
+          AlternateRow = False
+          GridLines = False
+          DefaultDraw = False
+          SelectionColor = clNone
+          SelectionTextColor = clHighlightText
+        end
+        object Button1: TButton
+          Left = 2
+          Top = 167
+          Width = 75
+          Height = 24
+          Caption = 'Get Last'
+          TabOrder = 1
+          OnClick = Button1Click
+        end
+        object Button2: TButton
+          Left = 136
+          Top = 167
+          Width = 75
+          Height = 24
+          Caption = 'Copy link'
+          TabOrder = 2
+          OnClick = Button2Click
+        end
+      end
+    end
+    object scTabSheet6: TscTabSheet
+      Caption = 'Search'
+      StyleKind = sctsTabSheet
+      WallpaperIndex = -1
+      CustomBackgroundImageIndex = -1
+      DrawTabsWallpaper = False
+      object Panel8: TPanel
+        Left = 0
+        Top = 0
+        Width = 215
+        Height = 195
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitHeight = 191
+        object scListView6: TscListView
+          Left = 2
+          Top = 3
+          Width = 209
+          Height = 129
+          FluentUIOpaque = False
+          Columns = <
+            item
+              Caption = 'Link'
+              Width = 53
+            end
+            item
+              Caption = 'Name'
+              Width = 150
+            end>
+          ExtendedColumnDraw = False
+          TabOrder = 0
+          ViewStyle = vsReport
+          SelectionStyle = scstStyled
+          ShowFocusRect = True
+          AlternateRow = False
+          GridLines = False
+          DefaultDraw = False
+          SelectionColor = clNone
+          SelectionTextColor = clHighlightText
+        end
+        object Button4: TButton
+          Left = 2
+          Top = 167
+          Width = 75
+          Height = 24
+          Caption = 'Search'
+          TabOrder = 1
+          OnClick = Button4Click
+        end
+        object Button5: TButton
+          Left = 136
+          Top = 167
+          Width = 75
+          Height = 24
+          Caption = 'Copy link'
+          TabOrder = 2
+          OnClick = Button5Click
+        end
+        object EditSearch: TEdit
+          Left = 2
+          Top = 138
+          Width = 209
+          Height = 23
+          TabOrder = 3
+          TextHint = 'Search'
+        end
+      end
+    end
+    object scTabSheet5: TscTabSheet
+      Caption = 'Proxies'
+      StyleKind = sctsTabSheet
+      WallpaperIndex = -1
+      CustomBackgroundImageIndex = -1
+      DrawTabsWallpaper = False
+      object Panel7: TPanel
+        Left = 0
+        Top = 0
+        Width = 215
+        Height = 195
+        Align = alClient
+        BevelInner = bvRaised
+        BevelOuter = bvLowered
+        TabOrder = 0
+        ExplicitWidth = 217
+        object Label1: TLabel
+          Left = 23
+          Top = 125
+          Width = 49
+          Height = 15
+          Caption = 'TimeOut:'
+        end
+        object Label2: TLabel
+          Left = 23
+          Top = 96
+          Width = 27
+          Height = 15
+          Caption = 'Type:'
+        end
+        object Label3: TLabel
+          Left = 23
+          Top = 67
+          Width = 41
+          Height = 15
+          Caption = 'Proxies:'
+        end
+        object Label4: TLabel
+          Left = 23
+          Top = 38
+          Width = 158
+          Height = 15
+          Caption = 'IP:PORT or IP:PORT:USER:PASS'
+        end
+        object EditProxiesIP: TEdit
+          Left = 70
+          Top = 59
+          Width = 103
+          Height = 23
+          TabOrder = 0
+          TextHint = 'IP:PORT:USER:PASS'
+        end
+        object EnableProxiesBox: TCheckBox
+          Left = 23
+          Top = 15
+          Width = 97
+          Height = 17
+          Caption = 'Enable Proxies'
+          TabOrder = 1
+          OnClick = EnableProxiesBoxClick
+        end
+        object ProxyTypeBox: TComboBox
+          Left = 70
+          Top = 88
+          Width = 103
+          Height = 23
+          ItemIndex = 0
+          TabOrder = 2
+          Text = 'HTTP/HTTPS'
+          Items.Strings = (
+            'HTTP/HTTPS'
+            'SOCKS4'
+            'SOCKS5')
+        end
+        object Button3: TButton
+          Left = 63
+          Top = 154
+          Width = 97
+          Height = 25
+          Caption = 'Check Proxies'
+          Enabled = False
+          TabOrder = 3
+          OnClick = Button3Click
+        end
+        object scSpinEditTimeOut: TscSpinEdit
+          Left = 80
+          Top = 117
+          Width = 47
+          Height = 23
+          FluentUIOpaque = False
+          UseFontColorToStyleColor = False
+          ContentMarginLeft = 0
+          ContentMarginRight = 0
+          ContentMarginTop = 0
+          ContentMarginBottom = 0
+          CustomBackgroundImageNormalIndex = -1
+          CustomBackgroundImageHotIndex = -1
+          CustomBackgroundImageDisabledIndex = -1
+          PromptTextColor = clNone
+          HideMaskWithEmptyText = False
+          HidePromptTextIfFocused = False
+          WallpaperIndex = -1
+          Increment = 1.000000000000000000
+          UpDownKind = scupkDefault
+          ValueType = scvtInteger
+          MouseWheelSupport = True
+          Value = 15.000000000000000000
+          DisplayType = scedtNumeric
+          Transparent = False
+          BorderKind = scebFrame
+          TabOrder = 4
+          TextHint = 'Timeout'
+        end
+      end
+    end
   end
 end
