@@ -1,4 +1,4 @@
-﻿unit UnitWatch;
+unit UnitWatch;
 
 interface
 
@@ -130,7 +130,7 @@ begin
   except
 
   end;
-  Button1.Enabled := False;
+  Button1.Enabled := true;
   Button1.Caption := 'Get Last';
 end;
 
@@ -202,10 +202,9 @@ begin
     HTTPS.Free;
     //
   except
-    Button4.Enabled := False;
-    Button4.Caption := 'Search';
+
   end;
-  Button4.Enabled := False;
+  Button4.Enabled := true;
   Button4.Caption := 'Search';
 end;
 
