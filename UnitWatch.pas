@@ -306,6 +306,8 @@ var
 begin
   Memo1.Text := '';
   scListView4.Clear;
+  scListView2.Clear;
+  scListView3.Clear;
   ButtonParse.Enabled := False;
   ButtonParse.Caption := 'Processing';
   scTabSheet2.Enabled := False;
@@ -455,13 +457,12 @@ end;
 procedure TRezkaForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   IniF.WriteString('ED', 'Ed1', EditLink.Text);
-  if EnableProxiesBox.Checked = true then
-  begin
+
     IniF.WriteString('PX', 'p1', EditProxiesIP.Text);
     IniF.WriteBool('PX', 'e1', EnableProxiesBox.Checked);
     IniF.WriteInteger('PX', 'p2', ProxyTypeBox.ItemIndex);
     IniF.WriteInteger('PX', 'sp1', trunc(scSpinEditTimeOut.Value));
-  end;
+
 end;
 
 procedure TRezkaForm.FormCreate(Sender: TObject);
@@ -578,12 +579,14 @@ begin
         Length(fProxyStr)));
     end
     else
+    begin
       HTTPS.FirewallHost := Copy(fProxyStr, 1, pos(':', fProxyStr) - 1);
-    get1 := Copy(fProxyStr, pos(':', fProxyStr) + 1, Length(fProxyStr));
-    HTTPS.FirewallPort := StrToInt(Copy(get1, 1, pos(':', get1) - 1));
-    get2 := Copy(get1, pos(':', get1) + 1, Length(get1));
-    HTTPS.FirewallUser := Copy(get2, 1, pos(':', get2) - 1);
-    HTTPS.FirewallPassword := Copy(get2, pos(':', get2) + 1, Length(get2));
+      get1 := Copy(fProxyStr, pos(':', fProxyStr) + 1, Length(fProxyStr));
+      HTTPS.FirewallPort := StrToInt(Copy(get1, 1, pos(':', get1) - 1));
+      get2 := Copy(get1, pos(':', get1) + 1, Length(get1));
+      HTTPS.FirewallUser := Copy(get2, 1, pos(':', get2) - 1);
+      HTTPS.FirewallPassword := Copy(get2, pos(':', get2) + 1, Length(get2));
+    end;
   end;
 end;
 
