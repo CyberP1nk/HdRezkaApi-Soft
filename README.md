@@ -1,5 +1,8 @@
 # HDrezka.ag-skip-ads
 
+![RezkaAG_JTZMs290sT](https://github.com/CyberP1nk/HDrezka.ag-skip-ads/assets/80653515/8c20818b-d35a-45bb-bbef-a3b608222f30)
+
+
 -the INI Config, now contains date, name, season, episode log
 
 -added last top cinema
