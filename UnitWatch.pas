@@ -1,4 +1,4 @@
-unit UnitWatch;
+﻿unit UnitWatch;
 
 interface
 
@@ -57,6 +57,8 @@ type
     Button5: TButton;
     EditSearch: TEdit;
     Label4: TLabel;
+    Button6: TButton;
+    Button7: TButton;
     procedure ButtonParseClick(Sender: TObject);
     procedure ButtonGetDirectPlayerClick(Sender: TObject);
     procedure scListView2Click(Sender: TObject);
@@ -72,6 +74,8 @@ type
     procedure EnableProxiesBoxClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button5Click(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -216,6 +220,31 @@ begin
   end
   else
     ShowMessage('Bad link!');
+end;
+
+procedure TRezkaForm.Button6Click(Sender: TObject);
+begin
+
+  if RezkaForm.scListView5.Items.count > 0 then
+  begin
+    EditLink.Text := scListView5.Selected.Caption;
+    scPageControl1.ActivePage := scTabSheet1;
+  end
+  else
+    ShowMessage('Bad link!');
+
+end;
+
+procedure TRezkaForm.Button7Click(Sender: TObject);
+begin
+  if RezkaForm.scListView6.Items.count > 0 then
+  begin
+    EditLink.Text := scListView6.Selected.Caption;
+    scPageControl1.ActivePage := scTabSheet1;
+  end
+  else
+    ShowMessage('Bad link!');
+
 end;
 
 procedure TRezkaForm.ButtonGetDirectPlayerClick(Sender: TObject);
@@ -458,10 +487,10 @@ procedure TRezkaForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   IniF.WriteString('ED', 'Ed1', EditLink.Text);
 
-    IniF.WriteString('PX', 'p1', EditProxiesIP.Text);
-    IniF.WriteBool('PX', 'e1', EnableProxiesBox.Checked);
-    IniF.WriteInteger('PX', 'p2', ProxyTypeBox.ItemIndex);
-    IniF.WriteInteger('PX', 'sp1', trunc(scSpinEditTimeOut.Value));
+  IniF.WriteString('PX', 'p1', EditProxiesIP.Text);
+  IniF.WriteBool('PX', 'e1', EnableProxiesBox.Checked);
+  IniF.WriteInteger('PX', 'p2', ProxyTypeBox.ItemIndex);
+  IniF.WriteInteger('PX', 'sp1', trunc(scSpinEditTimeOut.Value));
 
 end;
 

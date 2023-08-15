@@ -343,7 +343,7 @@ object RezkaForm: TRezkaForm
     Top = 0
     Width = 223
     Height = 225
-    ActivePage = scTabSheet1
+    ActivePage = scTabSheet6
     Align = alClient
     TabOrder = 1
     TabGlowEffect.Enabled = False
@@ -388,7 +388,6 @@ object RezkaForm: TRezkaForm
         BevelInner = bvRaised
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitWidth = 217
         object EditLink: TEdit
           Left = 8
           Top = 34
@@ -493,7 +492,8 @@ object RezkaForm: TRezkaForm
         BevelInner = bvRaised
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitWidth = 217
+        ExplicitWidth = 213
+        ExplicitHeight = 191
         object ButtonGetDirectPlayer: TButton
           Left = 113
           Top = 151
@@ -572,7 +572,6 @@ object RezkaForm: TRezkaForm
             DefaultDraw = False
             SelectionColor = clNone
             SelectionTextColor = clHighlightText
-            ExplicitWidth = 84
           end
         end
         object Memo1: TMemo
@@ -620,7 +619,6 @@ object RezkaForm: TRezkaForm
         BevelInner = bvRaised
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitWidth = 217
         object scButton1: TscButton
           Left = 10
           Top = 134
@@ -865,7 +863,6 @@ object RezkaForm: TRezkaForm
         BevelInner = bvRaised
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitHeight = 191
         object scListView5: TscListView
           Left = 2
           Top = 2
@@ -895,7 +892,7 @@ object RezkaForm: TRezkaForm
         object Button1: TButton
           Left = 2
           Top = 167
-          Width = 75
+          Width = 64
           Height = 24
           Caption = 'Get Last'
           TabOrder = 1
@@ -909,6 +906,15 @@ object RezkaForm: TRezkaForm
           Caption = 'Copy link'
           TabOrder = 2
           OnClick = Button2Click
+        end
+        object Button6: TButton
+          Left = 72
+          Top = 167
+          Width = 58
+          Height = 24
+          Caption = '1 step'
+          TabOrder = 3
+          OnClick = Button6Click
         end
       end
     end
@@ -927,7 +933,6 @@ object RezkaForm: TRezkaForm
         BevelInner = bvRaised
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitHeight = 191
         object scListView6: TscListView
           Left = 2
           Top = 3
@@ -957,16 +962,16 @@ object RezkaForm: TRezkaForm
         object Button4: TButton
           Left = 2
           Top = 167
-          Width = 75
+          Width = 71
           Height = 24
           Caption = 'Search'
           TabOrder = 1
           OnClick = Button4Click
         end
         object Button5: TButton
-          Left = 136
+          Left = 149
           Top = 167
-          Width = 75
+          Width = 62
           Height = 24
           Caption = 'Copy link'
           TabOrder = 2
@@ -979,6 +984,15 @@ object RezkaForm: TRezkaForm
           Height = 23
           TabOrder = 3
           TextHint = 'Search'
+        end
+        object Button7: TButton
+          Left = 79
+          Top = 167
+          Width = 65
+          Height = 24
+          Caption = '1 step'
+          TabOrder = 4
+          OnClick = Button7Click
         end
       end
     end
@@ -997,7 +1011,6 @@ object RezkaForm: TRezkaForm
         BevelInner = bvRaised
         BevelOuter = bvLowered
         TabOrder = 0
-        ExplicitWidth = 217
         object Label1: TLabel
           Left = 23
           Top = 125
