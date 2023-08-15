@@ -1,4 +1,4 @@
-﻿unit UnitWatch;
+unit UnitWatch;
 
 interface
 
@@ -142,7 +142,11 @@ procedure TRezkaForm.Button2Click(Sender: TObject);
 begin
   if RezkaForm.scListView5.Items.count > 0 then
   begin
-    Clipboard.AsText := scListView5.Selected.Caption;
+    try
+      Clipboard.AsText := scListView5.Selected.Caption;
+    except
+      ShowMessage('Link not selected!');
+    end;
   end
   else
     ShowMessage('Bad link!');
@@ -216,7 +220,11 @@ procedure TRezkaForm.Button5Click(Sender: TObject);
 begin
   if RezkaForm.scListView6.Items.count > 0 then
   begin
-    Clipboard.AsText := scListView6.Selected.Caption;
+    try
+      Clipboard.AsText := scListView6.Selected.Caption;
+    except
+      ShowMessage('Link not selected!');
+    end;
   end
   else
     ShowMessage('Bad link!');
@@ -227,8 +235,13 @@ begin
 
   if RezkaForm.scListView5.Items.count > 0 then
   begin
-    EditLink.Text := scListView5.Selected.Caption;
-    scPageControl1.ActivePage := scTabSheet1;
+    try
+      EditLink.Text := scListView5.Selected.Caption;
+      scPageControl1.ActivePage := scTabSheet1;
+    except
+
+      ShowMessage('Link not select!');
+    end;
   end
   else
     ShowMessage('Bad link!');
@@ -237,10 +250,15 @@ end;
 
 procedure TRezkaForm.Button7Click(Sender: TObject);
 begin
+
   if RezkaForm.scListView6.Items.count > 0 then
   begin
-    EditLink.Text := scListView6.Selected.Caption;
-    scPageControl1.ActivePage := scTabSheet1;
+    try
+      EditLink.Text := scListView6.Selected.Caption;
+      scPageControl1.ActivePage := scTabSheet1;
+    except
+      ShowMessage('Link not selected!');
+    end;
   end
   else
     ShowMessage('Bad link!');
