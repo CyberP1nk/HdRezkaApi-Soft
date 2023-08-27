@@ -1,5 +1,7 @@
 # HDrezka.ag-skip-ads
 
+![RezkaAG_Dxmn4QST1H](https://github.com/CyberP1nk/HDrezka.ag-skip-ads/assets/80653515/7d56d3fa-5005-4be2-9cd9-c0ed80017f07)
+
 Feature:
 
 INI Config and Logging:
