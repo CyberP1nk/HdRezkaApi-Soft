@@ -1,484 +1,390 @@
-unit UnitWatch;
+﻿unit UnitWatch;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  Winapi.Windows, Winapi.Messages, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ipwhttp, scControls, Vcl.StdCtrls,
-  Vcl.ComCtrls, RegExpr, System.StrUtils, System.IniFiles, System.NetEncoding,
-  System.JSON, ShellApi, ClipBrd, Vcl.ExtCtrls, Vcl.Mask;
+  Vcl.ComCtrls, System.RegularExpressions, System.StrUtils, System.IniFiles,
+  System.NetEncoding,
+  System.JSON, ShellApi, ClipBrd, Vcl.ExtCtrls, Vcl.Mask, SysUtils, FMX.Media;
 
 type
   TRezkaForm = class(TForm)
     scLabel5: TscLabel;
     scPageControl1: TscPageControl;
-    scTabSheet1: TscTabSheet;
-    Panel1: TPanel;
     scTabSheet2: TscTabSheet;
-    Panel2: TPanel;
-    EditLink: TEdit;
-    scLabelLink: TscLabel;
-    ButtonParse: TButton;
-    scListView1: TscListView;
-    scLabel1: TscLabel;
-    ButtonGetDirectPlayer: TButton;
-    scListView2: TscListView;
-    scTabSheet3: TscTabSheet;
-    Panel3: TPanel;
-    scButton1: TscButton;
-    scButton2: TscButton;
+    Panel2GetResolution: TPanel;
+    scListViewResolution: TscListView;
     Panel4: TPanel;
-    Memo1: TMemo;
-    scLabel7: TscLabel;
-    Panel5: TPanel;
-    scListView3: TscListView;
-    scLabel6: TscLabel;
-    scListView4: TscListView;
+    scListViewSE: TscListView;
     scTabSheet4: TscTabSheet;
-    Panel6: TPanel;
-    scListView5: TscListView;
-    Button1: TButton;
-    Button2: TButton;
+    Panel6GetLast: TPanel;
+    scListViewTop: TscListView;
+    ButtonGetLast: TButton;
+    ButtonCopyLinkTop: TButton;
     scTabSheet5: TscTabSheet;
-    Panel7: TPanel;
+    Panel7Proxies: TPanel;
     EditProxiesIP: TEdit;
     EnableProxiesBox: TCheckBox;
     ProxyTypeBox: TComboBox;
-    Button3: TButton;
+    ButtonCheckProxies: TButton;
     scSpinEditTimeOut: TscSpinEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     scTabSheet6: TscTabSheet;
-    Panel8: TPanel;
-    scListView6: TscListView;
-    Button4: TButton;
-    Button5: TButton;
+    Panel8Search: TPanel;
+    scListViewSearch: TscListView;
+    ButtonSearch: TButton;
+    ButtonCopySearch: TButton;
     EditSearch: TEdit;
-    Label4: TLabel;
-    Button6: TButton;
-    Button7: TButton;
+    Button1stTop: TButton;
+    Button1stSearch: TButton;
+    ComboBoxCinemaType: TComboBox;
+    ComboBoxType: TComboBox;
+    LabeledEditStatus: TLabeledEdit;
+    LabeledEditMaxSeries: TLabeledEdit;
+    scButtonCopyLink: TscButton;
+    scButtonOpenBrowser: TscButton;
+    scListViewTranslations: TscListView;
+    ButtonParse: TButton;
     procedure ButtonParseClick(Sender: TObject);
-    procedure ButtonGetDirectPlayerClick(Sender: TObject);
-    procedure scListView2Click(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure SetProxy;
-    procedure scButton1Click(Sender: TObject);
-    procedure scButton2Click(Sender: TObject);
-    procedure scListView1Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure scButtonOpenBrowserClick(Sender: TObject);
+    procedure scButtonCopyLinkClick(Sender: TObject);
+    procedure ButtonGetLastClick(Sender: TObject);
+    procedure ButtonCopyLinkTopClick(Sender: TObject);
+    procedure ButtonCheckProxiesClick(Sender: TObject);
     procedure EnableProxiesBoxClick(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
-    procedure Button7Click(Sender: TObject);
+    procedure ButtonSearchClick(Sender: TObject);
+    procedure ButtonCopySearchClick(Sender: TObject);
+    procedure Button1stTopClick(Sender: TObject);
+    procedure Button1stSearchClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure ComboBoxCinemaTypeChange(Sender: TObject);
+    procedure ComboBoxTypeChange(Sender: TObject);
+    procedure scListViewSESelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
 
   private
     { Private declarations }
-    IniF, IniF2: TInifile;
+    IniF: TInifile;
+    Reg: TRegEx;
+
+    topurl, ctrl_favs, post_id, translator_ID, urllinkedit, streams,
+      response: string;
+    match: TMatch;
     function pars(s1, s2, st: string): string;
+    function URLGO(url, method, data: string): string;
     function DateTimeToUnix(ConvDate: TDateTime): Longint;
-    function SubStr(const S: string; StartPoint, EndPoint: Integer): string;
+    function SubStr(const S: string; StartPoint, EndPoint: integer): string;
     function CountOccurences(const SubText: string; const Text: string)
-      : Integer;
+      : integer;
+    procedure savedata(url, sep, sse: string);
+    procedure AddTranslationToListView(listView: TscListView;
+      const translation: string);
   public
     { Public declarations }
-    ctrl_favs, post_id, translator_ID, urllinkedit, streams: string;
-    HTTPS: Tipwhttp;
-    Reg: TRegExpr;
   end;
 
 var
   RezkaForm: TRezkaForm;
-  LI: TListItem;
-  NameLog: string;
 
 implementation
 
 {$R *.dfm}
 
-procedure TRezkaForm.Button1Click(Sender: TObject);
+procedure TRezkaForm.ButtonGetLastClick(Sender: TObject);
 begin
-  Button1.Enabled := False;
-  Button1.Caption := 'Processing';
-  try
-    scListView5.Clear;
-    HTTPS := Tipwhttp.Create(nil);
-    HTTPS.AllowHTTPCompression := true;
-    HTTPS.Config
-      ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
-    HTTPS.Config('CodePage=65001');
-    HTTPS.Config('KeepAlive=True');
-    SetProxy();
-    HTTPS.Accept :=
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
-    HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1' +
-      #13#10 + 'Accept-Language: en-US,en;q=0.9';
-    HTTPS.Get('https://rezka.ag/?filter=watching');
-    Reg := TRegExpr.Create;
-    Reg.Expression :=
-      '<div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)</';
-    if Reg.Exec(HTTPS.TransferredData) then
-      repeat
-        LI := RezkaForm.scListView5.Items.Add;
-        LI.Caption := Reg.Match[1];
-        LI.SubItems.Add(Reg.Match[2]);
-      until not Reg.ExecNext;
-    Reg.Free;
-    HTTPS.Free;
-    //
-  except
-
-  end;
-  Button1.Enabled := true;
-  Button1.Caption := 'Get Last';
-end;
-
-procedure TRezkaForm.Button2Click(Sender: TObject);
-begin
-  if RezkaForm.scListView5.Items.count > 0 then
-  begin
-    try
-      Clipboard.AsText := scListView5.Selected.Caption;
-    except
-      ShowMessage('Link not selected!');
-    end;
-  end
+  ButtonGetLast.Enabled := False;
+  ButtonGetLast.Caption := 'Processing';
+  scListViewTop.Clear;
+  if ComboBoxCinemaType.ItemIndex <> 0 then
+    topurl := 'https://rezka.ag/' + ComboBoxCinemaType.Text + '/' +
+      ComboBoxType.Text + '/'
   else
-    ShowMessage('Bad link!');
+    topurl := 'https://rezka.ag/?filter=watching';
+  Reg := TRegEx.Create
+    ('<div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/a> <div>([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/',
+    [roIgnoreCase, roMultiline]);
+  match := Reg.match(URLGO(topurl, 'GET', ''));
+  while match.Success do
+  begin
+    with scListViewTop.Items.Add do
+    begin
+      Caption := match.Groups.Item[1].Value;
+      SubItems.Add(match.Groups.Item[2].Value);
+      SubItems.Add(match.Groups.Item[3].Value);
+    end;
+    match := match.NextMatch;
+  end;
+  ButtonGetLast.Enabled := true;
+  ButtonGetLast.Caption := 'Get Last';
 end;
 
-procedure TRezkaForm.Button3Click(Sender: TObject);
-var
-  fProxyStr: string;
+procedure TRezkaForm.ButtonCopyLinkTopClick(Sender: TObject);
 begin
+  if scListViewTop.Selected <> nil then
+    Clipboard.AsText := scListViewTop.Selected.Caption
+  else
+    ShowMessage('No item selected!');
+end;
 
-  HTTPS := Tipwhttp.Create(nil);
-  HTTPS.AllowHTTPCompression := true;
-  HTTPS.Config
-    ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
-  HTTPS.Config('CodePage=65001');
-  HTTPS.Config('KeepAlive=True');
-  SetProxy();
+procedure TRezkaForm.ButtonCheckProxiesClick(Sender: TObject);
+begin
+  ButtonCheckProxies.Enabled := False;
+  ButtonCheckProxies.Caption := 'Checking';
 
-  HTTPS.Accept :=
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
-  HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1' +
-    #13#10 + 'Accept-Language: en-US,en;q=0.9';
-  HTTPS.Get('https://rezka.ag/');
-  if pos('rezka.ag', HTTPS.TransferredHeaders) > 0 then
+  if pos('rezka.ag', URLGO('https://rezka.ag/', 'GET', '')) > 0 then
     ShowMessage('Success!')
   else
     ShowMessage('No Response!');
 
-  HTTPS.Free;
+  ButtonCheckProxies.Enabled := true;
+  ButtonCheckProxies.Caption := 'Check Proxies';
 end;
 
-procedure TRezkaForm.Button4Click(Sender: TObject);
+procedure TRezkaForm.ButtonSearchClick(Sender: TObject);
 begin
-  Button4.Enabled := False;
-  Button4.Caption := 'Processing';
-  try
-    scListView6.Clear;
-    HTTPS := Tipwhttp.Create(nil);
-    HTTPS.AllowHTTPCompression := true;
-    HTTPS.Config
-      ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
-    HTTPS.Config('CodePage=65001');
-    HTTPS.Config('KeepAlive=True');
-    SetProxy();
-    HTTPS.Accept :=
-      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
-    HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1' +
-      #13#10 + 'Accept-Language: en-US,en;q=0.9';
-    HTTPS.Get('https://rezka.ag/search/?do=search&subaction=search&q=' +
-      StringReplace(EditSearch.Text, ' ', '+', [rfReplaceAll]));
-    Reg := TRegExpr.Create;
-    Reg.Expression :=
-      '<div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)</';
-    if Reg.Exec(HTTPS.TransferredData) then
-      repeat
-        LI := RezkaForm.scListView6.Items.Add;
-        LI.Caption := Reg.Match[1];
-        LI.SubItems.Add(Reg.Match[2]);
-      until not Reg.ExecNext;
-    Reg.Free;
-    HTTPS.Free;
-    //
-  except
+  ButtonSearch.Enabled := False;
+  ButtonSearch.Caption := 'Processing';
 
+  scListViewSearch.Clear;
+
+  Reg := TRegEx.Create
+    ('<div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/a> <div>([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/',
+    [roIgnoreCase, roMultiline]);
+  match := Reg.match
+    (URLGO('https://rezka.ag/search/?do=search&subaction=search&q=' +
+    StringReplace(EditSearch.Text, ' ', '+', [rfReplaceAll]), 'GET', ''));
+  while match.Success do
+  begin
+    with scListViewSearch.Items.Add do
+    begin
+      Caption := match.Groups.Item[1].Value;
+      SubItems.Add(match.Groups.Item[2].Value);
+      SubItems.Add(match.Groups.Item[3].Value);
+    end;
+    match := match.NextMatch;
   end;
-  Button4.Enabled := true;
-  Button4.Caption := 'Search';
+
+  ButtonSearch.Enabled := true;
+  ButtonSearch.Caption := 'Search';
 end;
 
-procedure TRezkaForm.Button5Click(Sender: TObject);
+procedure TRezkaForm.ButtonCopySearchClick(Sender: TObject);
 begin
-  if RezkaForm.scListView6.Items.count > 0 then
+  if scListViewSearch.Selected <> nil then
+    Clipboard.AsText := scListViewSearch.Selected.Caption
+  else
+    ShowMessage('No item selected!');
+end;
+
+procedure TRezkaForm.Button1stTopClick(Sender: TObject);
+begin
+  if scListViewTop.Selected <> nil then
   begin
-    try
-      Clipboard.AsText := scListView6.Selected.Caption;
-    except
-      ShowMessage('Link not selected!');
-    end;
+    response := scListViewTop.Selected.Caption;
+    scPageControl1.ActivePage := scTabSheet2;
   end
   else
-    ShowMessage('Bad link!');
+    ShowMessage('No item selected!');
 end;
 
-procedure TRezkaForm.Button6Click(Sender: TObject);
+procedure TRezkaForm.AddTranslationToListView(listView: TscListView;
+  const translation: string);
 begin
-
-  if RezkaForm.scListView5.Items.count > 0 then
+  with listView.Items.Add do
   begin
-    try
-      EditLink.Text := scListView5.Selected.Caption;
-      scPageControl1.ActivePage := scTabSheet1;
-    except
-
-      ShowMessage('Link not select!');
-    end;
-  end
-  else
-    ShowMessage('Bad link!');
-
-end;
-
-procedure TRezkaForm.Button7Click(Sender: TObject);
-begin
-
-  if RezkaForm.scListView6.Items.count > 0 then
-  begin
-    try
-      EditLink.Text := scListView6.Selected.Caption;
-      scPageControl1.ActivePage := scTabSheet1;
-    except
-      ShowMessage('Link not selected!');
-    end;
-  end
-  else
-    ShowMessage('Bad link!');
-
-end;
-
-procedure TRezkaForm.ButtonGetDirectPlayerClick(Sender: TObject);
-var
-  JSonValue: TJSonValue;
-  urlparse, xlink: string;
-begin
-  ButtonGetDirectPlayer.Enabled := False;
-  ButtonGetDirectPlayer.Caption := 'Processing';
-  RezkaForm.scListView3.Items.Clear;
-  IniF.WriteString('ED', 'Ed1', EditLink.Text);
-
-  HTTPS := Tipwhttp.Create(nil);
-  HTTPS.AllowHTTPCompression := true;
-  HTTPS.Config
-    ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
-  HTTPS.Config('CodePage=65001');
-  HTTPS.Config('KeepAlive=True');
-  try
-    scListView2.Clear;
-  finally
+    Caption := translation;
+    SubItems.Add('Single translation!');
   end;
-  if urllinkedit <> '' then
+end;
+
+procedure TRezkaForm.Button1stSearchClick(Sender: TObject);
+begin
+
+  if scListViewSearch.Selected <> nil then
   begin
-    translator_ID := '';
-    try
-      translator_ID := scListView1.Selected.Caption;
-      SetProxy();
-      HTTPS.Accept :=
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
-      HTTPS.ContentType := 'application/x-www-form-urlencoded; charset=UTF-8';
-      HTTPS.PostData := 'id=' + post_id + '&translator_id=' + translator_ID +
-        '&season=' + scListView4.Selected.Caption + '&episode=' +
-      { RezkaForm.EditEpisode.Text } scListView4.Selected.SubItems.Text +
-        '&favs=' + ctrl_favs + '&action=get_stream';
-      // scListView4listView.SelectedItems(0).SubItems(1).Text
-      HTTPS.POST('https://hdrezka.ag/ajax/get_cdn_series/?t=' +
-        inttostr(DateTimeToUnix(now)));
-
-      JSonValue := TJSonObject.ParseJSONValue(HTTPS.TransferredData);
-      try
-        urlparse := JSonValue.GetValue<string>('url');
-      except
-        urlparse := StringReplace(streams, '\/\/_\/\/', '//_//',
-          [rfReplaceAll]);
-      end;
-      JSonValue.Free;
-
-      xlink := SubStr(urlparse, 3, Length(urlparse));
-      xlink := StringReplace(xlink, '//_//', '', [rfReplaceAll]);
-      xlink := StringReplace(xlink, 'JCQjISFAIyFAIyM=', '', [rfReplaceAll]);
-      xlink := StringReplace(xlink, 'Xl5eIUAjIyEhIyM=', '', [rfReplaceAll]);
-      xlink := StringReplace(xlink, 'IyMjI14hISMjIUBA', '', [rfReplaceAll]);
-      xlink := StringReplace(xlink, 'QEBAQEAhIyMhXl5e', '', [rfReplaceAll]);
-      xlink := StringReplace(xlink, 'JCQhIUAkJEBeIUAjJCRA', '', [rfReplaceAll]);
-      xlink := TnetEncoding.Base64String.Decode(xlink);
-
-      Reg := TRegExpr.Create;
-      Reg.Expression := '\[(.*?)\](.*?) [\w]+ (.*?)(,|$)';
-      if Reg.Exec(xlink) then
-        repeat
-          LI := RezkaForm.scListView2.Items.Add;
-          LI.Caption := Reg.Match[1];
-          LI.SubItems.Add(Reg.Match[2]);
-          LI.SubItems.Add(Reg.Match[3]);
-        until not Reg.ExecNext;
-      Reg.Free;
-
-    except
-      ShowMessage('Get the info about translation first!');
-    end;
+    response := scListViewSearch.Selected.Caption;
+    scPageControl1.ActivePage := scTabSheet2;
   end
   else
-    ShowMessage('Get the info about translation first!');
-
-  ButtonGetDirectPlayer.Enabled := true;
-  ButtonGetDirectPlayer.Caption := 'Get resolution';
-  HTTPS.Free;
+    ShowMessage('No item selected!');
 end;
 
 procedure TRezkaForm.ButtonParseClick(Sender: TObject);
 var
-  NameLog: string;
-  i: Integer;
-
-  lowseason, highseason: string;
-
+  HTTPdata: string;
 begin
-  Memo1.Text := '';
-  scListView4.Clear;
-  scListView2.Clear;
-  scListView3.Clear;
+  LabeledEditMaxSeries.Text := '';
+  urllinkedit := '';
+
+  scListViewSE.Clear;
+  scListViewResolution.Clear;
+  scListViewSE.Enabled := False;
+  scListViewTranslations.Clear;
+
   ButtonParse.Enabled := False;
   ButtonParse.Caption := 'Processing';
-  scTabSheet2.Enabled := False;
-  scTabSheet3.Enabled := False;
-  scTabSheet2.TabVisible := False;
-  scTabSheet3.TabVisible := False;
-  HTTPS := Tipwhttp.Create(nil);
-  HTTPS.AllowHTTPCompression := true;
-  HTTPS.Config
-    ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
-  HTTPS.Config('CodePage=65001');
-  HTTPS.Config('KeepAlive=True');
-  //
-  SetProxy();
-  try
-    scListView1.Clear;
 
-    if RezkaForm.EditLink.Text <> '' then
+  if response <> '' then
+  begin
+
+    Reg := TRegEx.Create('((https:|http:)\/\/.*?.html)',
+      [roIgnoreCase, roMultiline]);
+    match := Reg.match(response);
+    while match.Success do
     begin
-      HTTPS.ResetHeaders;
-      Reg := TRegExpr.Create;
-
-      urllinkedit := '';
-      Reg.Expression := '((https:|http:)\/\/.*?.html)';
-      if Reg.Exec(RezkaForm.EditLink.Text) then
+      urllinkedit := match.Groups.Item[1].Value;
+      match := match.NextMatch;
+    end;
+    HTTPdata := URLGO(urllinkedit, 'GET', '');
+    if pos('rezka.ag', HTTPdata) > 0 then
+    begin
+      Reg := TRegEx.Create('data-translator_id="([\d]+)">(.*?)<',
+        [roIgnoreCase, roMultiline]);
+      match := Reg.match(HTTPdata);
+      while match.Success do
       begin
-        repeat
-          urllinkedit := Reg.Match[1];
-        until not Reg.ExecNext;
-
-        HTTPS.Accept :=
-          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
-        HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1'
-          + #13#10 + 'Accept-Language: en-US,en;q=0.9';
-        HTTPS.Get(urllinkedit);
-        if pos('rezka.ag', HTTPS.TransferredHeaders) > 0 then
+        with scListViewTranslations.Items.Add do
         begin
+          Caption := match.Groups.Item[1].Value;
+          SubItems.Add(match.Groups.Item[2].Value);
+        end;
+        match := match.NextMatch;
+      end;
 
-          Reg.Expression := 'data-translator_id="([\d]+)">(.*?)<';
-          if Reg.Exec(HTTPS.TransferredData) then
-            repeat
-              LI := RezkaForm.scListView1.Items.Add;
-              LI.Caption := Reg.Match[1];
-              LI.SubItems.Add(Reg.Match[2]);
-
-            until not Reg.ExecNext;
-          Reg.Expression :=
-            'data-season_id="([\d]+)" data-episode_id="([\d]+)">[\d\s\w\А-Я\а-я]+<\/li><\/ul><\/div>';
-          if Reg.Exec(HTTPS.TransferredData) then
-            repeat
-              Memo1.Text := 'S:' + Reg.Match[1] + '|' + 'E:' + Reg.Match[2];
-            until not Reg.ExecNext;
-          lowseason := '';
-          Reg.Expression :=
-            'data-season_id="([\d]+)" data-episode_id="([\d]+)">[\d\s\w\А-Я\а-я]+<\/li>';
-          if Reg.Exec(HTTPS.TransferredData) then
-            lowseason := Reg.Match[1];
-          highseason := '';
-          Reg.Expression :=
-            'data-season_id="([\d]+)" data-episode_id="([\d]+)">[\d\s\w\А-Я\а-я]+<\/li><\/ul><\/div>';
-          if Reg.Exec(HTTPS.TransferredData) then
-          begin
-            Memo1.Text := 'S:' + Reg.Match[1] + '|' + 'E:' + Reg.Match[2];
-            highseason := Reg.Match[1];
-          end;
-          try
-            if StrToInt(highseason) > 0 then
-            begin
-              for i := (StrToInt(lowseason)) to StrToInt(highseason) do
-              begin
-                Reg.Expression := 'data-season_id="' + inttostr(i) +
-                  '" data-episode_id="([\d]+)"';
-                if Reg.Exec(HTTPS.TransferredData) then
-                  repeat
-                    LI := RezkaForm.scListView4.Items.Add;
-                    LI.Caption := inttostr(i);
-                    LI.SubItems.Add(Reg.Match[1]);
-                  until not Reg.ExecNext;
-              end;
-            end;
-          except
-
-          end;
-          if RezkaForm.scListView1.Items.count = 0 then
-          begin
-            Reg.Expression :=
-              'sof\.tv\.(initCDNSeriesEvents|initCDNMoviesEvents)\([\d]+, ([\d]+),';
-            if Reg.Exec(HTTPS.TransferredData) then
-              repeat
-                LI := RezkaForm.scListView1.Items.Add;
-                LI.Caption := Reg.Match[2];
-                LI.SubItems.Add('Single translation!');
-                LI := RezkaForm.scListView4.Items.Add;
-                LI.Caption := Reg.Match[2];
-                LI.SubItems.Add('Single translation!');
-              until not Reg.ExecNext;
-          end;
-          streams := pars('{"id":"cdnplayer","streams":"', '"',
-            HTTPS.TransferredData);
-          post_id := pars('name="post_id" id="post_id" value="', '"',
-            HTTPS.TransferredData);
-          ctrl_favs := pars('<input type="hidden" id="ctrl_favs" value="', '"',
-            HTTPS.TransferredData);
-          ButtonParse.Enabled := true;
-          ButtonParse.Caption := 'Get translation';
-          HTTPS.Free;
-          Reg.Free;
-        end
-        else
-          ShowMessage('Bad connection!');
-      end
-      else
-        ShowMessage('No link insert!');
+      Reg := TRegEx.Create
+        ('data-season_id="([\d]+)" data-episode_id="([\d]+)">',
+        [roIgnoreCase, roMultiline]);
+      match := Reg.match(HTTPdata);
+      while match.Success do
+      begin
+        with scListViewSE.Items.Add do
+        begin
+          Caption := match.Groups.Item[1].Value;
+          SubItems.Add(match.Groups.Item[2].Value);
+        end;
+        LabeledEditMaxSeries.Text := 'S:' + match.Groups.Item[1].Value + '|' +
+          'E:' + match.Groups.Item[2].Value;
+        match := match.NextMatch;
+      end;
+      if scListViewTranslations.Items.count = 0 then
+      begin
+        Reg := TRegEx.Create
+          ('sof\.tv\.(initCDNSeriesEvents|initCDNMoviesEvents)\([\d]+, ([\d]+),',
+          [roIgnoreCase, roMultiline]);
+        match := Reg.match(HTTPdata);
+        while match.Success do
+        begin
+          AddTranslationToListView(scListViewTranslations,
+            match.Groups.Item[2].Value);
+          AddTranslationToListView(scListViewSE, match.Groups.Item[2].Value);
+          match := match.NextMatch;
+        end;
+      end;
+      streams := pars('{"id":"cdnplayer","streams":"', '"', HTTPdata);
+      post_id := pars('name="post_id" id="post_id" value="', '"', HTTPdata);
+      ctrl_favs := pars('<input type="hidden" id="ctrl_favs" value="', '"',
+        HTTPdata);
+      scListViewTranslations.Selected := scListViewTranslations.Items[0];
+      scListViewTranslations.Selected.Focused := true;
+      scListViewTranslations.Selected.MakeVisible(False);
+      scListViewSE.Selected := scListViewSE.Items[0];
+      scListViewSE.Selected.Focused := true;
+      scListViewSE.Selected.MakeVisible(False);
     end
     else
-      ShowMessage('Bad link!');
-  finally
-    ButtonParse.Enabled := true;
-    ButtonParse.Caption := 'Get translation';
+      ShowMessage('Bad connection!');
+  end
+  else
+    ShowMessage('No link insert!');
+  scListViewSE.Enabled := true;
+  ButtonParse.Enabled := true;
+  ButtonParse.Caption := 'Get translation';
+end;
+
+procedure TRezkaForm.ComboBoxCinemaTypeChange(Sender: TObject);
+var
+  TempOptions: TStringList;
+begin
+  ComboBoxType.Items.Clear;
+  ComboBoxType.Text := 'Cinema Type';
+
+  TempOptions := TStringList.Create;
+
+  case ComboBoxCinemaType.ItemIndex of
+    0:
+      begin
+        ComboBoxType.Enabled := False;
+        ComboBoxType.Text := 'Last Top';
+      end;
+    1:
+      begin
+        ComboBoxType.Enabled := Enabled;
+        ComboBoxType.Text := 'western';
+        TempOptions.AddStrings(['western', 'family', 'fantasy', 'biographical',
+          'arthouse', 'action', 'military', 'detective', 'crime', 'adventures',
+          'drama', 'sport', 'fiction', 'comedy', 'melodrama', 'thriller',
+          'horror', 'musical', 'historical', 'documentary', 'erotic', 'kids',
+          'travel', 'cognitive', 'theatre', 'concert', 'standup', 'short',
+          'russian', 'ukrainian', 'foreign']);
+      end;
+    2:
+      begin
+        ComboBoxType.Enabled := Enabled;
+        ComboBoxType.Text := 'military';
+        TempOptions.AddStrings(['military', 'action', 'arthouse', 'thriller',
+          'horror', 'adventures', 'family', 'fiction', 'fantasy', 'drama',
+          'melodrama', 'sport', 'comedy', 'detective', 'crime', 'historical',
+          'biographical', 'western', 'documentary', 'musical', 'realtv',
+          'telecasts', 'standup', 'erotic', 'russian', 'ukrainian', 'foreign']);
+      end;
+    3:
+      begin
+        ComboBoxType.Enabled := Enabled;
+        ComboBoxType.Text := 'fiction';
+        TempOptions.AddStrings(['fiction', 'fantasy', 'action', 'biographical',
+          'comedy', 'western', 'military', 'drama', 'melodrama', 'arthouse',
+          'detective', 'crime', 'thriller', 'historical', 'documentary',
+          'erotic', 'fairytale', 'family', 'horror', 'adventures', 'sport',
+          'cognitive', 'musical', 'anime', 'kids', 'adult', 'multseries',
+          'short', 'full-length', 'soyzmyltfilm', 'russian', 'ukrainian',
+          'foreign']);
+      end;
+    4:
+      begin
+        ComboBoxType.Enabled := Enabled;
+        ComboBoxType.Text := 'military';
+        TempOptions.AddStrings(['military', 'drama', 'detective', 'thriller',
+          'comedy', 'fiction', 'fantasy', 'adventures', 'romance', 'historical',
+          'horror', 'mystery', 'musical', 'erotic', 'action', 'fighting',
+          'samurai', 'sport', 'educational', 'everyday', 'parody', 'school',
+          'kids', 'fairytale', 'kodomo', 'shoujoai', 'shoujo', 'shounen',
+          'shounenai', 'ecchi', 'mahoushoujo', 'mecha']);
+      end;
   end;
+
+  TempOptions.Sorted := true;
+  ComboBoxType.Items.Assign(TempOptions);
+
+  TempOptions.Free;
 
 end;
 
-function TRezkaForm.CountOccurences(const SubText, Text: string): Integer;
+procedure TRezkaForm.ComboBoxTypeChange(Sender: TObject);
+begin
+  if ComboBoxCinemaType.ItemIndex <> 0 then
+    topurl := 'https://rezka.ag/' + ComboBoxCinemaType.Text + '/' +
+      ComboBoxType.Text + '/'
+  else
+    topurl := 'https://rezka.ag/?filter=watching';
+end;
+
+function TRezkaForm.CountOccurences(const SubText, Text: string): integer;
 begin
   Result := pos(SubText, Text);
   if Result > 0 then
@@ -489,9 +395,9 @@ end;
 procedure TRezkaForm.EnableProxiesBoxClick(Sender: TObject);
 begin
   if EnableProxiesBox.Enabled = true then
-    Button3.Enabled := true
+    ButtonCheckProxies.Enabled := true
   else
-    Button3.Enabled := False;
+    ButtonCheckProxies.Enabled := False;
 end;
 
 function TRezkaForm.DateTimeToUnix(ConvDate: TDateTime): Longint;
@@ -501,35 +407,42 @@ begin
   Result := Round((ConvDate - UnixStartDate) * 86400);
 end;
 
-procedure TRezkaForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TRezkaForm.FormDestroy(Sender: TObject);
 begin
-  IniF.WriteString('ED', 'Ed1', EditLink.Text);
-
-  IniF.WriteString('PX', 'p1', EditProxiesIP.Text);
-  IniF.WriteBool('PX', 'e1', EnableProxiesBox.Checked);
-  IniF.WriteInteger('PX', 'p2', ProxyTypeBox.ItemIndex);
-  IniF.WriteInteger('PX', 'sp1', trunc(scSpinEditTimeOut.Value));
-
+  IniF := TInifile.Create(ExtractFilePath(Application.ExeName) +
+    'settings.ini');
+  IniF.WriteString('Settings', 'Link', response);
+  IniF.WriteString('Settings', 'ProxiesIP', EditProxiesIP.Text);
+  IniF.WriteBool('Settings', 'ProxiesOn', EnableProxiesBox.Checked);
+  IniF.WriteInteger('Settings', 'ProxyType', ProxyTypeBox.ItemIndex);
+  IniF.WriteInteger('Settings', 'TimeOut', trunc(scSpinEditTimeOut.Value));
+  FreeAndNil(IniF);
 end;
 
-procedure TRezkaForm.FormCreate(Sender: TObject);
+procedure TRezkaForm.FormShow(Sender: TObject);
+var
+  IniF: TInifile;
+  TS: TStringList;
 begin
-  IniF := TInifile.Create(ExtractFilePath(Application.ExeName) + 'SeEp.ini');
-  scTabSheet2.Enabled := False;
-  scTabSheet3.Enabled := False;
-  scTabSheet2.TabVisible := False;
-  scTabSheet3.TabVisible := False;
-  EditLink.Text := IniF.ReadString('ED', 'Ed1', '');
-  EnableProxiesBox.Checked := IniF.ReadBool('PX', 'e1', False);
-  EditProxiesIP.Text := IniF.ReadString('PX', 'p1', '');
-  ProxyTypeBox.ItemIndex := IniF.ReadInteger('PX', 'p2', 0);
-  scSpinEditTimeOut.Value := IniF.ReadInteger('PX', 'sp1', 15);
+  if not FileExists('settings.ini') then
+  begin
+    TS := TStringList.Create;
+    TS.SaveToFile(ExtractFilePath(Application.ExeName) + 'settings.ini');
+    FreeAndNil(TS);
+  end;
 
+  IniF := TInifile.Create(ExtractFilePath(paramstr(0)) + 'settings.ini');
+  response := IniF.ReadString('Settings', 'Link', '');
+  EnableProxiesBox.Checked := IniF.ReadBool('Settings', 'ProxiesOn', False);
+  EditProxiesIP.Text := IniF.ReadString('Settings', 'ProxiesIP', '');
+  ProxyTypeBox.ItemIndex := IniF.ReadInteger('Settings', 'ProxyType', 0);
+  scSpinEditTimeOut.Value := IniF.ReadInteger('Settings', 'TimeOut', 15);
+  FreeAndNil(IniF);
 end;
 
 function TRezkaForm.pars(s1, s2, st: string): string;
 var
-  p1: Integer;
+  p1: integer;
 begin
   Result := '';
   p1 := pos(s1, st);
@@ -540,107 +453,204 @@ begin
   end;
 end;
 
-procedure TRezkaForm.scButton1Click(Sender: TObject);
+procedure TRezkaForm.savedata(url, sep, sse: string);
 var
-  string1: string;
+  NameLog: string;
 begin
+  NameLog := FormatDateTime('dd.mm.yyyy"-"hh.nn.ss', now);
+  IniF := TInifile.Create(ExtractFilePath(Application.ExeName) +
+    'settings.ini');
+  IniF.WriteString('ED', NameLog, urllinkedit + '|S:' +
+    scListViewSE.Selected.Caption + '|E:' +
+    scListViewSE.Selected.SubItems.Text);
+  FreeAndNil(IniF);
+end;
 
-  if (RezkaForm.scListView3.Items.count > 0) then
+procedure TRezkaForm.scButtonOpenBrowserClick(Sender: TObject);
+begin
+  if (scListViewResolution.Selected <> nil) and (scListViewSE.Selected <> nil)
+  then
   begin
-    try
-      string1 := scListView3.Selected.Caption;
-      NameLog := FormatDateTime('dd.mm.yyyy"-"hh.nn.ss', now);
-      IniF.WriteString('ED', NameLog, urllinkedit + '|S:' +
-        scListView4.Selected.Caption + '|E:' +
-        scListView4.Selected.SubItems.Text);
-      // RezkaForm.scListView3.Items.Add.Caption := scListView2.Selected.SubItems.Text;
-      ShellExecute(Handle, 'open', PChar(string1), nil, nil, SW_NORMAL);
-
-    except
-      ShowMessage('Link not selected!');
-    end;
-
+    savedata(urllinkedit, scListViewSE.Selected.Caption,
+      scListViewSE.Selected.SubItems.Text);
+    ShellExecute(Handle, 'open',
+      PChar(scListViewResolution.Selected.SubItems.Text), nil, nil, SW_NORMAL);
   end
   else
-    ShowMessage('Bad link!');
-
+    ShowMessage('No item selected!');
 end;
 
-procedure TRezkaForm.scButton2Click(Sender: TObject);
+procedure TRezkaForm.scButtonCopyLinkClick(Sender: TObject);
 begin
-  if RezkaForm.scListView3.Items.count > 0 then
+  if (scListViewResolution.Selected <> nil) and (scListViewSE.Selected <> nil)
+  then
   begin
-    try
-      Clipboard.AsText := scListView3.Selected.Caption;
-      NameLog := FormatDateTime('dd.mm.yyyy"-"hh.nn.ss', now);
-      IniF.WriteString('ED', NameLog, urllinkedit + '|S:' +
-        scListView4.Selected.Caption + '|E:' +
-        scListView4.Selected.SubItems.Text);
-    except
-      ShowMessage('Link not selected!');
-    end;
+    savedata(urllinkedit, scListViewSE.Selected.Caption,
+      scListViewSE.Selected.SubItems.Text);
+    Clipboard.AsText := scListViewResolution.Selected.SubItems.Text;
   end
   else
-    ShowMessage('Bad link!');
-end;
-
-procedure TRezkaForm.scListView1Click(Sender: TObject);
-begin
-  if RezkaForm.scListView1.Items.count > 0 then
-  begin
-    scTabSheet2.Enabled := true;
-    scTabSheet2.TabVisible := true;
-  end;
-end;
-
-procedure TRezkaForm.scListView2Click(Sender: TObject);
-var
-  separate: string;
-
-begin
-  RezkaForm.scListView3.Items.Clear;
-  if RezkaForm.scListView2.Items.count > 0 then
-  begin
-    scTabSheet3.Enabled := true;
-    scTabSheet3.TabVisible := true;
-    RezkaForm.scListView3.Items.Add.Caption :=
-      scListView2.Selected.SubItems.Text;
-  end;
-end;
-
-procedure TRezkaForm.SetProxy;
-var
-  resultcount, get1, get2, fProxyStr: string;
-begin
-  if EnableProxiesBox.Checked = true then
-  begin
-    HTTPS.Timeout := trunc(scSpinEditTimeOut.Value);
-    HTTPS.FirewallType := TipwhttpFirewallTypes((ProxyTypeBox.ItemIndex) + 1);
-    fProxyStr := EditProxiesIP.Text;
-
-    resultcount := inttostr(CountOccurences(':', fProxyStr));
-    if pos('3', resultcount) = 0 then
-    begin
-      HTTPS.FirewallHost := Copy(fProxyStr, 1, pos(':', fProxyStr) - 1);
-      HTTPS.FirewallPort := StrToInt(Copy(fProxyStr, pos(':', fProxyStr) + 1,
-        Length(fProxyStr)));
-    end
-    else
-    begin
-      HTTPS.FirewallHost := Copy(fProxyStr, 1, pos(':', fProxyStr) - 1);
-      get1 := Copy(fProxyStr, pos(':', fProxyStr) + 1, Length(fProxyStr));
-      HTTPS.FirewallPort := StrToInt(Copy(get1, 1, pos(':', get1) - 1));
-      get2 := Copy(get1, pos(':', get1) + 1, Length(get1));
-      HTTPS.FirewallUser := Copy(get2, 1, pos(':', get2) - 1);
-      HTTPS.FirewallPassword := Copy(get2, pos(':', get2) + 1, Length(get2));
-    end;
-  end;
+    ShowMessage('No item selected!');
 end;
 
 function TRezkaForm.SubStr(const S: string;
-  StartPoint, EndPoint: Integer): string;
+  StartPoint, EndPoint: integer): string;
 begin
   Result := Copy(S, StartPoint, EndPoint + 1 - StartPoint);
+end;
+
+function TRezkaForm.URLGO(url, method, data: string): string;
+var
+  HTTPS: Tipwhttp;
+  resultcount, get1, get2, fProxyStr: string;
+begin
+  HTTPS := Tipwhttp.Create(nil);
+  try
+    HTTPS.AllowHTTPCompression := true;
+    HTTPS.Config
+      ('UserAgent=Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0');
+    HTTPS.Config('CodePage=65001');
+    HTTPS.Config('KeepAlive=True');
+    if EnableProxiesBox.Checked = true then
+    begin
+      HTTPS.Timeout := trunc(scSpinEditTimeOut.Value);
+      HTTPS.FirewallType := TipwhttpFirewallTypes((ProxyTypeBox.ItemIndex) + 1);
+      fProxyStr := EditProxiesIP.Text;
+      resultcount := inttostr(CountOccurences(':', fProxyStr));
+      if pos('3', resultcount) = 0 then
+      begin
+        HTTPS.FirewallHost := Copy(fProxyStr, 1, pos(':', fProxyStr) - 1);
+        HTTPS.FirewallPort := StrToInt(Copy(fProxyStr, pos(':', fProxyStr) + 1,
+          Length(fProxyStr)));
+      end
+      else
+      begin
+        HTTPS.FirewallHost := Copy(fProxyStr, 1, pos(':', fProxyStr) - 1);
+        get1 := Copy(fProxyStr, pos(':', fProxyStr) + 1, Length(fProxyStr));
+        HTTPS.FirewallPort := StrToInt(Copy(get1, 1, pos(':', get1) - 1));
+        get2 := Copy(get1, pos(':', get1) + 1, Length(get1));
+        HTTPS.FirewallUser := Copy(get2, 1, pos(':', get2) - 1);
+        HTTPS.FirewallPassword := Copy(get2, pos(':', get2) + 1, Length(get2));
+      end;
+    end;
+    HTTPS.Accept :=
+      'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
+    HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1' +
+      #13#10 + 'Accept-Language: en-US,en;q=0.9';
+    if Length(method) < 4 then
+    begin
+      HTTPS.Get(url);
+      Result := HTTPS.TransferredData;
+    end
+    else
+    begin
+      HTTPS.PostData := data;
+      HTTPS.POST(url);
+      Result := HTTPS.TransferredData;
+    end;
+  finally
+    HTTPS.Free;
+  end;
+
+end;
+
+procedure TRezkaForm.scListViewSESelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+var
+  urlparse, xlink: string;
+  patterns: array of string;
+  pattern: string;
+  response: string;
+  JSonValue: TJSonvalue;
+begin
+  scListViewResolution.Clear;
+  if (scListViewSE.Selected <> nil) and
+    (Length(scListViewSE.Selected.Caption) > 0) then
+  begin
+    if (scListViewTranslations.Selected <> nil) then
+    begin
+      if (Length(scListViewSE.Selected.Caption) > 0) then
+      begin
+        LabeledEditStatus.Text := 'Processing';
+
+        translator_ID := '';
+        translator_ID := scListViewTranslations.Selected.Caption;
+        response := URLGO('https://hdrezka.ag/ajax/get_cdn_series/?t=' +
+          inttostr(DateTimeToUnix(now)), 'POST',
+          'id=' + post_id + '&translator_id=' + translator_ID + '&season=' +
+          scListViewSE.Selected.Caption + '&episode=' +
+          Trim(scListViewSE.Selected.SubItems.Text) + '&favs=' + ctrl_favs +
+          '&action=get_stream');
+        JSonValue := TJSonObject.ParseJSONValue(response);
+        try
+
+          if Assigned(JSonValue) and (JSonValue is TJSonObject) then
+          begin
+            if JSonValue.TryGetValue<string>('url', response) then
+            begin
+              urlparse := JSonValue.GetValue<string>('url');
+            end
+            else
+            begin
+              urlparse := StringReplace(streams, '\/\/_\/\/', '//_//',
+                [rfReplaceAll]);
+            end;
+          end;
+
+        finally
+          JSonValue.Free
+        end;
+
+        if Length(urlparse) > 6 then
+        begin
+          xlink := SubStr(urlparse, 3, Length(urlparse));
+          xlink := StringReplace(xlink, '//_//', '', [rfReplaceAll]);
+          SetLength(patterns, 6);
+          patterns[0] := 'JCQjISFAIyFAIyM=';
+          patterns[1] := 'Xl5eIUAjIyEhIyM=';
+          patterns[2] := 'IyMjI14hISMjIUBA';
+          patterns[3] := 'QEBAQEAhIyMhXl5e';
+          patterns[4] := 'JCQhIUAkJEBeIUAjJCRA';
+          for pattern in patterns do
+            xlink := StringReplace(xlink, pattern, '', [rfReplaceAll]);
+          xlink := TNetEncoding.Base64.Decode(xlink);
+
+          Reg := TRegEx.Create('\[(.*?)\](.*?) [\w]+ (.*?)(,|$)',
+            [roIgnoreCase, roMultiline]);
+          match := Reg.match(xlink);
+          while match.Success do
+          begin
+            with scListViewResolution.Items.Add do
+            begin
+              Caption := match.Groups.Item[1].Value;
+              SubItems.Add(match.Groups.Item[2].Value);
+              SubItems.Add(match.Groups.Item[3].Value);
+            end;
+            match := match.NextMatch;
+          end;
+          scListViewResolution.Selected := scListViewResolution.Items[0];
+          scListViewResolution.Selected.Focused := true;
+          scListViewResolution.Selected.MakeVisible(False);
+        end
+        else
+          ShowMessage('Possible IP or Restricted region!');
+        LabeledEditStatus.Text := 'Press Watch';
+      end
+      else
+        LabeledEditStatus.Text := 'Select Episode!';
+    end
+    else
+    begin
+      LabeledEditStatus.Text := 'Translation row!';
+      ShowMessage('Translation row selected required!');
+      scListViewTranslations.Selected := scListViewTranslations.Items[0];
+      scListViewTranslations.Selected.Focused := true;
+      scListViewTranslations.Selected.MakeVisible(False);
+    end;
+  end
+  else
+    LabeledEditStatus.Text := 'Get link!';
+
 end;
 
 end.

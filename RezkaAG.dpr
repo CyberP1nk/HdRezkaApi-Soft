@@ -5,20 +5,18 @@ uses
   UnitWatch in 'UnitWatch.pas' {RezkaForm},
   Vcl.Themes,
   Vcl.Styles,
-  ufrmSplash in 'ufrmSplash.pas' {splashADS},
-  uThreadSplash in 'uThreadSplash.pas';
+  ufrmSplash in 'ufrmSplash.pas' {splashADS};
 
 {$R *.res}
- var SplashThread: TSplashThread;
+
+var
+   SplashScreen: TsplashADS;
 begin
 
-  if ParamStr (1) <> '-nosplash' then
-   begin
-    SplashThread := TSplashThread.Create (False);
-    SplashThread.FreeOnTerminate := True;
-    SplashThread.Resume;
-   end;
-
+  SplashScreen := TsplashADS.Create (splashADS);
+  SplashScreen.Show;
+  SplashScreen.Update;
+  SplashScreen.Release;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Charcoal Dark Slate');
