@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ipwhttp, scControls, Vcl.StdCtrls,
   Vcl.ComCtrls, System.RegularExpressions, System.StrUtils, System.IniFiles,
   System.NetEncoding,
-  System.JSON, ShellApi, ClipBrd, Vcl.ExtCtrls, Vcl.Mask, SysUtils, FMX.Media;
+  System.JSON, ShellApi, ClipBrd, Vcl.ExtCtrls, Vcl.Mask, SysUtils;
 
 type
   TRezkaForm = class(TForm)
