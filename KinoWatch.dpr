@@ -1,4 +1,4 @@
-program RezkaAG;
+program KinoWatch;
 
 uses
   Vcl.Forms,
@@ -20,7 +20,7 @@ begin
   SplashScreen.Release;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Charcoal Dark Slate');
+  TStyleManager.TrySetStyle('Sky');
   Application.CreateForm(TRezkaForm, RezkaForm);
   Application.CreateForm(TFormImage, FormImage);
   Application.Run;

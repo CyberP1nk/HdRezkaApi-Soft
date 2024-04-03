@@ -1,4 +1,4 @@
-program RezkaAG;
+program CinemaWatch;
 
 uses
   Vcl.Forms,

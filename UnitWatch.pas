@@ -8,7 +8,8 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ipwhttp, scControls, Vcl.StdCtrls,
   Vcl.ComCtrls, System.RegularExpressions, System.StrUtils, System.IniFiles,
   System.NetEncoding,
-  System.JSON, ShellApi, ClipBrd, Vcl.ExtCtrls, Vcl.Mask, SysUtils;
+  System.JSON, ShellApi, ClipBrd, Vcl.ExtCtrls, Vcl.Mask, SysUtils,
+  Vcl.OleCtrls;
 
 type
   TRezkaForm = class(TForm)
@@ -31,25 +32,21 @@ type
     ProxyTypeBox: TComboBox;
     ButtonCheckProxies: TButton;
     scSpinEditTimeOut: TscSpinEdit;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    scTabSheet6: TscTabSheet;
-    Panel8Search: TPanel;
-    scListViewSearch: TscListView;
-    ButtonSearch: TButton;
-    ButtonCopySearch: TButton;
-    EditSearch: TEdit;
     Button1stTop: TButton;
-    Button1stSearch: TButton;
     ComboBoxCinemaType: TComboBox;
     ComboBoxType: TComboBox;
     LabeledEditStatus: TLabeledEdit;
-    LabeledEditMaxSeries: TLabeledEdit;
     scButtonCopyLink: TscButton;
     scButtonOpenBrowser: TscButton;
     scListViewTranslations: TscListView;
     ButtonParse: TButton;
+    scTabSheet1: TscTabSheet;
+    Panel1: TPanel;
+    Memo1: TMemo;
+    Note: TscTabSheet;
+    MemoNote: TMemo;
+    EditSearch: TEdit;
+    ButtonSearch: TButton;
     procedure ButtonParseClick(Sender: TObject);
     procedure scButtonOpenBrowserClick(Sender: TObject);
     procedure scButtonCopyLinkClick(Sender: TObject);
@@ -58,14 +55,19 @@ type
     procedure ButtonCheckProxiesClick(Sender: TObject);
     procedure EnableProxiesBoxClick(Sender: TObject);
     procedure ButtonSearchClick(Sender: TObject);
-    procedure ButtonCopySearchClick(Sender: TObject);
+
     procedure Button1stTopClick(Sender: TObject);
-    procedure Button1stSearchClick(Sender: TObject);
+
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ComboBoxCinemaTypeChange(Sender: TObject);
     procedure ComboBoxTypeChange(Sender: TObject);
     procedure scListViewSESelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
+
+    procedure scListViewTopSelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
+    procedure scListViewSearchSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
 
   private
@@ -82,19 +84,24 @@ type
     function SubStr(const S: string; StartPoint, EndPoint: integer): string;
     function CountOccurences(const SubText: string; const Text: string)
       : integer;
+    Function regexParse(const searchableValue: string): string;
     procedure savedata(url, sep, sse: string);
     procedure AddTranslationToListView(listView: TscListView;
       const translation: string);
   public
     { Public declarations }
+
   end;
 
 var
   RezkaForm: TRezkaForm;
+  UrlOfImage: string;
 
 implementation
 
 {$R *.dfm}
+
+uses UnitImage;
 
 procedure TRezkaForm.ButtonGetLastClick(Sender: TObject);
 begin
@@ -106,20 +113,8 @@ begin
       ComboBoxType.Text + '/'
   else
     topurl := 'https://rezka.ag/?filter=watching';
-  Reg := TRegEx.Create
-    ('<div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/a> <div>([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/',
-    [roIgnoreCase, roMultiline]);
-  match := Reg.match(URLGO(topurl, 'GET', ''));
-  while match.Success do
-  begin
-    with scListViewTop.Items.Add do
-    begin
-      Caption := match.Groups.Item[1].Value;
-      SubItems.Add(match.Groups.Item[2].Value);
-      SubItems.Add(match.Groups.Item[3].Value);
-    end;
-    match := match.NextMatch;
-  end;
+
+  regexParse(URLGO(topurl, 'GET', ''));
   ButtonGetLast.Enabled := true;
   ButtonGetLast.Caption := 'Get Last';
 end;
@@ -150,36 +145,11 @@ procedure TRezkaForm.ButtonSearchClick(Sender: TObject);
 begin
   ButtonSearch.Enabled := False;
   ButtonSearch.Caption := 'Processing';
-
-  scListViewSearch.Clear;
-
-  Reg := TRegEx.Create
-    ('<div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/a> <div>([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/',
-    [roIgnoreCase, roMultiline]);
-  match := Reg.match
-    (URLGO('https://rezka.ag/search/?do=search&subaction=search&q=' +
+  scListViewTop.Clear;
+  regexParse(URLGO('https://rezka.ag/search/?do=search&subaction=search&q=' +
     StringReplace(EditSearch.Text, ' ', '+', [rfReplaceAll]), 'GET', ''));
-  while match.Success do
-  begin
-    with scListViewSearch.Items.Add do
-    begin
-      Caption := match.Groups.Item[1].Value;
-      SubItems.Add(match.Groups.Item[2].Value);
-      SubItems.Add(match.Groups.Item[3].Value);
-    end;
-    match := match.NextMatch;
-  end;
-
   ButtonSearch.Enabled := true;
   ButtonSearch.Caption := 'Search';
-end;
-
-procedure TRezkaForm.ButtonCopySearchClick(Sender: TObject);
-begin
-  if scListViewSearch.Selected <> nil then
-    Clipboard.AsText := scListViewSearch.Selected.Caption
-  else
-    ShowMessage('No item selected!');
 end;
 
 procedure TRezkaForm.Button1stTopClick(Sender: TObject);
@@ -203,23 +173,11 @@ begin
   end;
 end;
 
-procedure TRezkaForm.Button1stSearchClick(Sender: TObject);
-begin
-
-  if scListViewSearch.Selected <> nil then
-  begin
-    response := scListViewSearch.Selected.Caption;
-    scPageControl1.ActivePage := scTabSheet2;
-  end
-  else
-    ShowMessage('No item selected!');
-end;
-
 procedure TRezkaForm.ButtonParseClick(Sender: TObject);
 var
   HTTPdata: string;
 begin
-  LabeledEditMaxSeries.Text := '';
+
   urllinkedit := '';
 
   scListViewSE.Clear;
@@ -244,7 +202,8 @@ begin
     HTTPdata := URLGO(urllinkedit, 'GET', '');
     if pos('rezka.ag', HTTPdata) > 0 then
     begin
-      Reg := TRegEx.Create('data-translator_id="([\d]+)">(.*?)<',
+      Reg := TRegEx.Create
+        ('data-translator_id="([\d]+)(">|" data-camrip="[\d]+" data-ads="[\d]+" data-director="[\d]+" data-cdn_quality="">)(.*?)<',
         [roIgnoreCase, roMultiline]);
       match := Reg.match(HTTPdata);
       while match.Success do
@@ -252,7 +211,7 @@ begin
         with scListViewTranslations.Items.Add do
         begin
           Caption := match.Groups.Item[1].Value;
-          SubItems.Add(match.Groups.Item[2].Value);
+          SubItems.Add(match.Groups.Item[3].Value);
         end;
         match := match.NextMatch;
       end;
@@ -268,11 +227,12 @@ begin
           Caption := match.Groups.Item[1].Value;
           SubItems.Add(match.Groups.Item[2].Value);
         end;
-        LabeledEditMaxSeries.Text := 'S:' + match.Groups.Item[1].Value + '|' +
-          'E:' + match.Groups.Item[2].Value;
+        { LabeledEditMaxSeries.Text := 'S:' + match.Groups.Item[1].Value + '|' +
+          'E:' + match.Groups.Item[2].Value; }
         match := match.NextMatch;
       end;
-      if scListViewTranslations.Items.count = 0 then
+      //if scListViewTranslations.Items.count = 0 then
+      if scListViewSE.Items.count = 0 then
       begin
         Reg := TRegEx.Create
           ('sof\.tv\.(initCDNSeriesEvents|initCDNMoviesEvents)\([\d]+, ([\d]+),',
@@ -291,10 +251,14 @@ begin
       ctrl_favs := pars('<input type="hidden" id="ctrl_favs" value="', '"',
         HTTPdata);
       scListViewTranslations.Selected := scListViewTranslations.Items[0];
+
       scListViewTranslations.Selected.Focused := true;
+
       scListViewTranslations.Selected.MakeVisible(False);
       scListViewSE.Selected := scListViewSE.Items[0];
+
       scListViewSE.Selected.Focused := true;
+
       scListViewSE.Selected.MakeVisible(False);
     end
     else
@@ -412,6 +376,8 @@ begin
   IniF := TInifile.Create(ExtractFilePath(Application.ExeName) +
     'settings.ini');
   IniF.WriteString('Settings', 'Link', response);
+  IniF.WriteString('MemoNote', 'Memo', MemoNote.Lines.Text);
+
   IniF.WriteString('Settings', 'ProxiesIP', EditProxiesIP.Text);
   IniF.WriteBool('Settings', 'ProxiesOn', EnableProxiesBox.Checked);
   IniF.WriteInteger('Settings', 'ProxyType', ProxyTypeBox.ItemIndex);
@@ -433,6 +399,7 @@ begin
 
   IniF := TInifile.Create(ExtractFilePath(paramstr(0)) + 'settings.ini');
   response := IniF.ReadString('Settings', 'Link', '');
+  MemoNote.Lines.Text := IniF.ReadString('MemoNote', 'Memo', '');
   EnableProxiesBox.Checked := IniF.ReadBool('Settings', 'ProxiesOn', False);
   EditProxiesIP.Text := IniF.ReadString('Settings', 'ProxiesIP', '');
   ProxyTypeBox.ItemIndex := IniF.ReadInteger('Settings', 'ProxyType', 0);
@@ -450,6 +417,28 @@ begin
   begin
     p1 := p1 + Length(s1);
     Result := Copy(st, p1, posex(s2, st, p1) - p1);
+  end;
+end;
+
+function TRezkaForm.regexParse(const searchableValue: string): string;
+begin
+  Reg := TRegEx.Create
+    ('<img src="([\d\w\s\.\/\:\-\\]+)" height="[\d]+" width="[\d]+" alt="[\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+" \/> <span class="[\w ]+">'
+    + '<i class="[\w]+">[\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+<\/i><i class="[\w]+"><\/i><\/span> (<span class="info">[\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+<\/span> |)'
+    + '<i class="i-sprt play"><\/i> <\/a> <i class="[\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+" data-id="[\d]+" data-full="[\d]+"><b>[\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+'
+    + '<\/b><\/i> <\/div> <div class="b-content__inline_item-link"> <a href="([\d\w\s\.\/\:\-\\]+)">([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/a> <div>([\d\s\w\А-Я\.\а-я\/\\\[\]\,\(\)\-\:]+)<\/',
+    [roIgnoreCase, roMultiline]);
+  match := Reg.match(searchableValue);
+  while match.Success do
+  begin
+    with scListViewTop.Items.Add do
+    begin
+      Caption := match.Groups.Item[3].Value;
+      SubItems.Add(match.Groups.Item[4].Value);
+      SubItems.Add(match.Groups.Item[5].Value);
+      SubItems.Add(match.Groups.Item[1].Value);
+    end;
+    match := match.NextMatch;
   end;
 end;
 
@@ -536,7 +525,8 @@ begin
     HTTPS.Accept :=
       'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8';
     HTTPS.OtherHeaders := 'DNT: 1' + #13#10 + 'Upgrade-Insecure-Requests: 1' +
-      #13#10 + 'Accept-Language: en-US,en;q=0.9';
+      #13#10 + 'Accept-Language: en-US,en;q=0.9'+#13#10+'X-Requested-With: XMLHttpRequest'+#13#10+'Origin: https://rezka.ag'+#13#10+'DNT: 1';
+    HTTPS.ContentType := 'application/x-www-form-urlencoded; charset=UTF-8';
     if Length(method) < 4 then
     begin
       HTTPS.Get(url);
@@ -552,6 +542,16 @@ begin
     HTTPS.Free;
   end;
 
+end;
+
+procedure TRezkaForm.scListViewSearchSelectItem(Sender: TObject;
+  Item: TListItem; Selected: Boolean);
+begin
+  if scListViewTop.Selected <> nil then
+  begin
+    UrlOfImage := scListViewTop.Selected.SubItems[2];
+    FormImage.Show;
+  end;
 end;
 
 procedure TRezkaForm.scListViewSESelectItem(Sender: TObject; Item: TListItem;
@@ -651,6 +651,20 @@ begin
   else
     LabeledEditStatus.Text := 'Get link!';
 
+end;
+
+procedure TRezkaForm.scListViewTopSelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+begin
+  if FormImage.Visible then
+  begin
+    FormImage.Close;
+  end;
+  if scListViewTop.Selected <> nil then
+  begin
+    UrlOfImage := scListViewTop.Selected.SubItems[2];
+    FormImage.Show;
+  end;
 end;
 
 end.

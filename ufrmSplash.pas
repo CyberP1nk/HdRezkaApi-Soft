@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.pngimage, scControls,
-  scExtControls, Vcl.ExtCtrls;
+  scExtControls, Vcl.ExtCtrls, Vcl.Imaging.jpeg;
 
 type
   TsplashADS = class(TForm)
@@ -23,5 +23,6 @@ var
 implementation
 
 {$R *.dfm}
+
 
 end.
