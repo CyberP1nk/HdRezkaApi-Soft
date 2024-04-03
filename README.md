@@ -1,5 +1,8 @@
 # HDrezka.ag-skip-ads
+NEW
+![CinemaWatch_Hn3iA1Rd0p](https://github.com/CyberP1nk/HDrezka.ag-skip-ads/assets/80653515/cd42a825-4455-4d9a-a0e9-225640138735)
 
+OLD
 ![RezkaAG_Dxmn4QST1H](https://github.com/CyberP1nk/HDrezka.ag-skip-ads/assets/80653515/7d56d3fa-5005-4be2-9cd9-c0ed80017f07)
 
 Feature:
